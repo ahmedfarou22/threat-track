@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Assessment Summary {% endblock %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+
+{% block content %}
+{% include 'includes/overview_header.html' %}
+<div class="col-xl-4 col-lg-12 task-detail-right">
+    <div class="card">
+        <div class="card-header">
+            <h5>Assessment Details</h5>
+        </div>
+
+        <div class="card-block">
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <td><i class="fas fa-adjust m-r-5"></i> Client</td>
+                        <td class="text-end"><span class="float-end"><a
+                                    class="text-secondary">{{assessment.client.name}}</a></span></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-sitemap m-r-5"></i> Assessment structure</td>
+                        <td class="text-end">
+                            <div class="btn-group">
+                                <a class="text-secondary"><i></i> {% if assessment.af_name %}{{ assessment.af_name }}{% else %} Not selected {% endif %}</a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-thermometer-half m-r-5"></i> Status</td>
+                        <td class="text-end">{{assessment.status}}</td>
+                    </tr>
+
+                    <tr>
+                        <td><i class="far fa-calendar-alt m-r-5"></i> Creation date</td>
+                        <td class="text-end">{{assessment.creation_date}}</td>
+                    </tr>
+                    <tr>
+                        <td><i class="far fa-calendar-alt m-r-5"></i> Start date</td>
+                        <td class="text-end">{{assessment.start_date|date:"F d, Y" }}</td>
+                    </tr>
+                    <tr>
+                        <td><i class="far fa-calendar-alt m-r-5"></i> End date</td>
+                        <td class="text-end">{{assessment.end_date|date:"F d, Y" }}</td>
+                    </tr>
+
+                    <tr>
+                        <td><i class="fas fa-user-plus m-r-5"></i> Created by</td>
+                        <td class="text-end"><a class="text-secondary">{{assessment.who_created.first_name}}
+                                {{assessment.who_created.last_name}}</a></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            {% if 'edit_assessments' in USER_PERMISSIONS or 'delete_assessments' in USER_PERMISSIONS%}
+            <br>
+
+            <div class="m-b-20 text-center">
+                {% if 'edit_assessments' in USER_PERMISSIONS %}
+                <a href="/assessments/{{assessment.id}}/edit"><button class="btn btn-primary">Edit
+                        Assessment</button></a>
+                {% endif %}
+
+                {% if 'delete_assessments' in USER_PERMISSIONS %}
+                    <form method="post" action="/assessments/delete" style="display: inline-block;">{% csrf_token %}
+                        <input type="text"  name="id" value="{{ assessment.id }}" hidden>
+                        <button class="btn btn-outline-danger" type="submit"
+                            onclick="return confirm('Are you sure you want to delete the assessment {{ assessment.name }}?')">Delete assessment</button>
+                    </form>
+            </div>
+            {% endif %}
+
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5>Assigned Users</h5>
+        </div>
+        <div class="card-block user-box assign-user">
+            {% for user in assessment.assigned_users.all %}
+            {% if forloop.counter0|divisibleby:2 %}
+            <div class="row">
+                {% endif %}
+                <div class="col-md-6">
+                    <div class="media">
+                        <div class="media-left media-middle me-3">
+                            {% if user.userprofile.profile_pic %}
+                            <img class="img-radius" src="{{ user.userprofile.profile_pic.url }}"
+                                alt="chat-user">
+                            {% else %}
+                            <img class="img-radius"
+                                src="{% static "main_profile_pic_avatar.jpg" %}"
+                                alt="chat-user">
+                            {% endif %}
+                        </div>
+                        <div class="media-body" style="padding-inline: 10px 20px;">
+                            <h6>{{ user.first_name }} {{ user.last_name }}</h6>
+                            <p>{{ user.username }} | {{ user.userprofile.role.name }}</p>
+                            <br>
+                        </div>
+                        <div>
+                            <a href="#!" class="text-muted"> <i class="icon-options-vertical"></i></a>
+                        </div>
+                    </div>
+                </div>
+                {% if forloop.counter|divisibleby:2 or forloop.last %}
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+    <div class="col-xl-8 col-lg-12"> <!--  -->
+        
+        {% if assessment.s_fields.items|length == 0 %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-3"><i class=" m-r-5"></i>No Summary Fields Added</h5>
+                </div>
+                <div class="card-block">
+                    <div class="m-b-20">
+                        <p> To add summary fields click on <b>Edit assessment, then choose an assessmentstructure</b></p>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            
+            {% for key, value in assessment.s_fields.items %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-3"><i class=" m-r-5"></i>{{ key }}</h5>
+                    {% if 'w_assessment_summary' in USER_PERMISSIONS %}
+                    <code>
+                        <a href="/assessments/{{assessment.id}}/assessment_field_edit/s/{{key}}"><i class="fas fa-edit text-info" title="Edit {{key}}" ></i></a>
+                        <a href="/assessments/{{assessment.id}}/assessment_field_render_shortcodes_key/s/{{key}}"><i class="fas fa-registered text-info" title="Render Shortcodes in {{key}}"></i></a>
+                        <a href="#" onclick="confirmAndSubmitForm('{{ key }}');"><i class="fas fa-trash-alt text-info" title="Delete {{key}}"></i></a>
+                        <form method="post" action="/assessments/assessment_field_delete" style="display: inline-block;">{% csrf_token %}
+                            <input type="text"  name="id" value="{{ assessment.id }}" hidden>
+                            <input type="text"  name="for" value="s" hidden>
+                            <input type="text"  name="key" value="{{ key }}" hidden>
+                            <button class="btn btn-icon" type="submit" hidden id="assessment_field_delete_{{key}}"></button>
+                        </form>
+                        <script>function confirmAndSubmitForm(key) {if (confirm('Are you sure you want to delete field ' + key + '?')) {    document.getElementById('assessment_field_delete_' + key).click();}}</script>
+                    </code>
+                    {% endif %}
+
+                </div>
+                <div class="card-block">
+                    <div class="m-b-20">
+                        <textarea class="editor form-control" name="{{key}}" rows='4'>{{value}}</textarea>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        
+        {% endif %}
+
+    </div>
+
+
+{% endblock content %}
+
+{% block javascripts %}
+{% comment %} CK editor JS {% endcomment %}
+<script src="{% static 'plugins/ck5/build/ckeditor.js'%}"></script>
+<script src="{% static 'plugins/ck5/build/custom_image_upload_plugin.js'%}"></script>
+
+<script>
+    const editorTextAreas = document.querySelectorAll('.editor');
+    editorTextAreas.forEach(textarea => {
+        ClassicEditor.create(textarea, { extraPlugins: [MyCustomUploadAdapterPlugin], }).then(editor => {
+            editor.enableReadOnlyMode("editor");
+            const toolbarElement = editor.ui.view.toolbar.element;
+            toolbarElement.style.display = 'none';
+        }).catch(handleSampleError);
+    });
+
+    function handleSampleError(error) {
+        const issueUrl = 'https://github.com/ckeditor/ckeditor5/issues';
+
+        const message = [
+            'Oops, something went wrong!',
+            `Please, report the following error on ${issueUrl} with the build id "4v1jdg7xl05e-i6h1ic7gzkvt" and the error stack trace:`
+        ].join('\n');
+
+        console.error(message);
+        console.error(error);
+    }
+</script>
+{% comment %} END of CK editor JS {% endcomment %}
+
+{% endblock javascripts %}

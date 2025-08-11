@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Vulnerabilities {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+    <!-- [ Main Content ] start -->
+    <section class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <!-- [ breadcrumb ] start -->
+                    <div class="page-header">
+                        <div class="page-block">
+                            <div class="row align-items-center">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        <h5 class="m-b-10">All Vulnerabilities</h5>
+                                    </div>
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a>{{app|capfirst}}</a></li>
+                                        <li class="breadcrumb-item"><a>Vulnerabilities</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        {% comment %} <h5 class="m-b-10">vulnerabilities</h5> good header {% endcomment %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- [ breadcrumb ] end -->
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <!-- [ Main Content ] start -->
+                            <div class="row">
+                                <!-- [ Hover-table ] start -->
+                                <div class="col-xl-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Vulnerabilities</h5>
+                                            {% if 'w_vulnerabilities' in USER_PERMISSIONS %}
+                                            <code> <a href="{% url 'vulnerability_add' %}" class="nav-link ">Add new vulnerability</a> </code>
+                                            {% endif %}
+                                        </div>                                    
+                                        <div class="card-block table-border-style">
+                                            <div class="table-responsive">
+                                                <form method="GET" action="">
+                                                    <div class="input-group mb-3">
+                                                        {% comment %} <input type="text" name="q" class="form-control" placeholder="Search vulnerabilities"> {% endcomment %}
+                                                        <input type="text"  name="q" class="form-control" id="search-input" placeholder="Search vulnerabilities" {% if query == None%}{% else %}value="{{query}}"{% endif %}>
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-primary" type="submit">Search</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Name</th>
+                                                            <th>Risk Rating</th>
+                                                            <th>Tag</th>
+                                                            {% if 'w_vulnerabilities' in USER_PERMISSIONS %}
+                                                            <th>Actions</th>
+                                                            {% endif %}
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for vulnerability in vulnerabilities %}
+                                                        <tr>
+                                                            <td><a href="/components/vulnerabilities/{{vulnerability.id}}"> {{ vulnerability.name }}</a> </td>  
+                                                            <td>{{ vulnerability.risk_rating }}</td>
+                                                            <td>{{ vulnerability.tag }}</td>
+
+                                                            {% if 'w_vulnerabilities' in USER_PERMISSIONS %}
+                                                            <td>
+                                                                <a href="/components/vulnerabilities/{{vulnerability.id}}" class="btn btn-primary">Edit</a>
+                                                                <a href="#" onclick="confirmAndSubmitForm('{{ vulnerability.id }}');" class="btn btn-danger">Delete</a>
+                                                            </td>
+                                                            <form method="post" action="{% url 'vulnerability_delete' %}" style="display: inline-block;">{% csrf_token %}
+                                                                <input type="text"  name="vulnerability_id" value="{{ vulnerability.id }}" hidden>
+                                                                <button class="btn btn-icon" type="submit" hidden id="vulnerability_delete_{{ vulnerability.id }}"></button>
+                                                            </form>
+                                                            <script>function confirmAndSubmitForm(key) {if (confirm('Are you sure you want to delete vulnerability ' + key + '?')) {    document.getElementById('vulnerability_delete_'+ key).click();}}</script>
+                                                            {% endif %}
+                                                        </tr>                                         
+                                                    {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                                {% if vulnerabilities.paginator.num_pages > 1 %}
+                                                <div class="pagination-container">
+                                                    <nav aria-label="...">
+                                                        <ul class="pagination">
+                                                            {% if vulnerabilities.has_previous %}
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="First">
+                                                                    <span aria-hidden="true">&laquo;</span>
+                                                                    <span class="sr-only">First</span>
+                                                                </a>
+                                                            </li>
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page={{ vulnerabilities.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Previous">
+                                                                    <span aria-hidden="true">&lsaquo;</span>
+                                                                    <span class="sr-only">Previous</span>
+                                                                </a>
+                                                            </li>
+                                                            {% endif %}
+                                                            {% for i in vulnerabilities.paginator.page_range %}
+                                                            {% if vulnerabilities.number == i %}
+                                                            <li class="page-item active"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span></li>
+                                                            {% elif i > vulnerabilities.number|add:'-5' and i < vulnerabilities.number|add:'5' %}
+                                                            <li class="page-item"><a class="page-link" href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ i }}</a></li>
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                            {% if vulnerabilities.has_next %}
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page={{ vulnerabilities.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Next">
+                                                                    <span aria-hidden="true">&rsaquo;</span>
+                                                                    <span class="sr-only">Next</span>
+                                                                </a>
+                                                            </li>
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page={{ vulnerabilities.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Last">
+                                                                    <span aria-hidden="true">&raquo;</span>
+                                                                    <span class="sr-only">Last</span>
+                                                                </a>
+                                                            </li>
+                                                            {% endif %}
+                                                        </ul>
+                                                    </nav>
+                                                </div>
+                                                {% endif %}
+                                            
+                                            
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- [ Hover-table ] end -->
+
+  
+
+                            </div>
+                            <!-- [ Main Content ] end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+    <!-- [ Main Content ] end -->
+    <script>
+        const searchInput = document.getElementById('search-input');
+        let timeoutId;
+        searchInput.addEventListener('keyup', function() {
+            const searchValue = searchInput.value.trim();
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(function() {
+                if (searchValue) {
+                    window.location.href = `vulnerabilities?q=${searchValue}`;
+                }
+            }, 1000);
+        });
+    </script>
+{% endblock content %}
+
+
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

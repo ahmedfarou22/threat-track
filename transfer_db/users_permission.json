@@ -1,0 +1,258 @@
+[
+{
+  "model": "users.permission",
+  "pk": 5,
+  "fields": {
+    "name": "r_users",
+    "for_app": "users"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 6,
+  "fields": {
+    "name": "w_users",
+    "for_app": "users"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 7,
+  "fields": {
+    "name": "r_assessment_structure",
+    "for_app": "assessment_structure"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 8,
+  "fields": {
+    "name": "w_assessment_structure",
+    "for_app": "assessment_structure"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 9,
+  "fields": {
+    "name": "r_clients",
+    "for_app": "components"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 10,
+  "fields": {
+    "name": "w_clients",
+    "for_app": "components"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 11,
+  "fields": {
+    "name": "r_templates",
+    "for_app": "components"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 12,
+  "fields": {
+    "name": "w_templates",
+    "for_app": "components"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 13,
+  "fields": {
+    "name": "r_vulnerabilities",
+    "for_app": "components"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 14,
+  "fields": {
+    "name": "w_vulnerabilities",
+    "for_app": "components"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 15,
+  "fields": {
+    "name": "see_activities",
+    "for_app": "visibility"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 17,
+  "fields": {
+    "name": "see_analytics",
+    "for_app": "visibility"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 18,
+  "fields": {
+    "name": "see_calendar",
+    "for_app": "visibility"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 19,
+  "fields": {
+    "name": "see_dashboard",
+    "for_app": "visibility"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 20,
+  "fields": {
+    "name": "view_all_assessments",
+    "for_app": "assessments"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 21,
+  "fields": {
+    "name": "view_assigned_assessments",
+    "for_app": "assessments"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 22,
+  "fields": {
+    "name": "add_assessments",
+    "for_app": "assessments"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 23,
+  "fields": {
+    "name": "edit_assessments",
+    "for_app": "assessments"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 24,
+  "fields": {
+    "name": "delete_assessments",
+    "for_app": "assessments"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 25,
+  "fields": {
+    "name": "generate_report",
+    "for_app": "assessments"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 26,
+  "fields": {
+    "name": "r_assessment_summary",
+    "for_app": "assessments"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 27,
+  "fields": {
+    "name": "w_assessment_summary",
+    "for_app": "assessments"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 28,
+  "fields": {
+    "name": "r_assessment_additional_fields",
+    "for_app": "assessments"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 29,
+  "fields": {
+    "name": "w_assessment_additional_fields",
+    "for_app": "assessments"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 30,
+  "fields": {
+    "name": "r_assessment_vulnerabilities",
+    "for_app": "assessments"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 31,
+  "fields": {
+    "name": "w_assessment_vulnerabilities",
+    "for_app": "assessments"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 32,
+  "fields": {
+    "name": "r_assessment_attached_files",
+    "for_app": "assessments"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 33,
+  "fields": {
+    "name": "w_assessment_attached_files",
+    "for_app": "assessments"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 34,
+  "fields": {
+    "name": "r_assessment_tasks",
+    "for_app": "assessments"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 35,
+  "fields": {
+    "name": "w_assessment_tasks",
+    "for_app": "assessments"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 36,
+  "fields": {
+    "name": "r_assessment_chat_room",
+    "for_app": "assessments"
+  }
+},
+{
+  "model": "users.permission",
+  "pk": 37,
+  "fields": {
+    "name": "w_assessment_chat_room",
+    "for_app": "assessments"
+  }
+}
+]

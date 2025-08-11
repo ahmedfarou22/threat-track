@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %} Template Info {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <!-- [ Main Content ] start -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        <h5 class="m-b-10">{% if 'w_templates' in USER_PERMISSIONS%}Edit {% else %} View {% endif %} Template</h5>
+                                    </div>
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a>{{app|capfirst}}</a></li>
+                                        <li class="breadcrumb-item"><a>{% if 'w_templates' in USER_PERMISSIONS%}Edit {% else %} View {% endif %} template</a></li>
+                                        <li class="breadcrumb-item"><a>{{template.name}}</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>{% if 'w_templates' in USER_PERMISSIONS%}Edit {% else %} View {% endif %} Template Info</h5>
+                                        </div>
+                                        <form method="post" action="" enctype="multipart/form-data" id="validateForm">
+                                            {% csrf_token %}
+                                        <div class="card-block">
+                                            <div class="row">
+
+                                                <div class="col-sm-12 mb-4">
+                                                    <div class="form-group">
+                                                        <label>Template name</label>
+                                                        <input type="text" value="{{template.name}}" name="t_name" class="form-control validate-required">
+                                                        <span class="validation-message" id="t_name-validation-message"></span>
+                                                    </div>
+                                                </div>                                                
+                                                
+
+                                                <div class="col-sm-12 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="abt">About</label>
+                                                        <textarea rows="2" class="form-control" name="t_about">{{template.about}}</textarea>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-12 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="abt">Charts Settings</label>
+                                                        <textarea rows="30" name="t_chart_settings" id="t_chart_settings" class="form-control validate-required validate-json" >{{charts_settings}}</textarea>
+                                                        <span class="validation-message" id="t_chart_settings-validation-message"></span>
+                                                    </div>
+                                                </div>
+                                                <script>var ugly = document.getElementById('t_chart_settings').value;var obj = JSON.parse(ugly);var pretty = JSON.stringify(obj, undefined, 4);document.getElementById('t_chart_settings').value = pretty;</script>
+
+
+                                                <div class="col-sm-8 mb-4">
+                                                    <div class="form-group">
+                                                        <label>Change template in use (.docx)</label>
+                                                        <div class="input-group">
+                                                            <input type="file" name="t_file" class="form-control validate-file-docx">
+                                                            <a href="/components/templates/download/{{template.id}}" class="btn btn-info">Download template in use</a>                                                   
+                                                        </div>
+                                                        <span class="validation-message" id="t_file-validation-message"></span>   
+                                                    </div>
+                                                </div>
+                                                
+                                                
+                                                <div class="col-sm-12 mb-2">
+                                                    <div class="form-group">
+                                                        <a href="{% url 'templates' %}" class="btn btn-secondary">Back</a>
+                                                        {% if 'w_templates' in USER_PERMISSIONS%}
+                                                        <button type="submit" class="btn btn-primary">Update</button>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>   
+                                            
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                </div> 
+                            </div>
+                            <!-- [ Main Content ] end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <!-- [ Main Content ] end -->
+
+{% endblock content %}
+{% block javascripts %}
+
+
+{% if 'w_templates' not in USER_PERMISSIONS%} 
+    <script> // disable all the input fileds (Make it read only)
+  const inputElements = document.querySelectorAll('input, select, textarea'); 
+  inputElements.forEach(element => {element.disabled = true;}); 
+  
+  const editorTextAreas = document.querySelectorAll('.editor');
+  editorTextAreas.forEach(textarea => {
+      ClassicEditor.create(textarea, {extraPlugins: [MyCustomUploadAdapterPlugin],}).then(editor => {
+          editor.enableReadOnlyMode("editor");
+          const toolbarElement = editor.ui.view.toolbar.element;
+          toolbarElement.style.display = 'none';}).catch(handleSampleError);
+  });
+
+  function handleSampleError(error) {
+      const issueUrl = 'https://github.com/ckeditor/ckeditor5/issues';
+
+      const message = [
+          'Oops, something went wrong!',
+          `Please, report the following error on ${issueUrl} with the build id "4v1jdg7xl05e-i6h1ic7gzkvt" and the error stack trace:`
+      ].join('\n');
+
+      console.error(message);
+      console.error(error);
+  }
+    </script>
+{% endif %}
+{% endblock javascripts %}

@@ -1,0 +1,487 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %} Edit Role {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <!-- [ Main Content ] start -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        <h5 class="m-b-10">Edit Role</h5>
+                                    </div>
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{% url 'roles_all' %}">Roles</a></li>
+                                        <li class="breadcrumb-item"><a>Edit Role</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="row">
+                                        <div class="col-md-5 col-sm-12">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h5>Edit Role - {{role_to_edit.name}}</h5>
+                                                </div>
+                                                <form role="form" method="post" action="" enctype="multipart/form-data" id="validateForm">
+                                                {% csrf_token %}
+                                                <div class="card-block">
+                                                    <div class="row">
+
+                                                        <div class="col-sm-12 mb-4">
+                                                            <div class="form-group">
+                                                                <label>Name</label>
+                                                                <input type="text" name="role_name"  value="{{role_to_edit.name}}" class="form-control validate-required" id="role_name_custom">
+                                                                <span class="validation-message" id="role_name-validation-message"></span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-sm-12 mb-4">
+                                                            <div class="form-group">
+                                                                <label>Description</label>
+                                                                <textarea class="form-control" name="description" rows='2'>{{role_to_edit.description}}</textarea>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-sm-2 mb-4">
+                                                            <div class="form-group">
+                                                                <label for="exampleColorInput" class="form-label">Color</label>
+                                                                <input type="color" class="form-control form-control-color" id="exampleColorInput" value="{{role_to_edit.color}}" name="color">
+                                                            </div>
+                                                        </div>
+                                                        
+                                                    <div class="col-sm-12 mb-2">
+                                                        <div class="form-group">
+                                                            <a href="{% url 'roles_all' %}" class="btn btn-secondary">Back</a>
+                                                                {% if role_to_edit.name != 'Manager' %} 
+                                                                <button type="submit" class="btn btn-primary">Edit role</button>
+                                                                {% endif %}
+                                                        </div>
+                                                    </div>  
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-7 col-sm-12">
+                                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                                <li class="nav-item">
+                                                  <a class="nav-link active" href="#" id="assessmentLink" onclick="showCard('assessment')">Assessments</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                  <a class="nav-link" href="#" id="visabilityLink" onclick="showCard('visability')">Visibility</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                  <a class="nav-link" href="#" id="componentsLink" onclick="showCard('components')">Components</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                  <a class="nav-link" href="#" id="assessment_structuresLink" onclick="showCard('assessment_structures')">Assessment Structures</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                  <a class="nav-link" href="#" id="users_teamsLink" onclick="showCard('users_teams')">Users & teams & Roles</a>
+                                                </li>
+                                              </ul>
+
+                                            <div class="card tohide" id="assessment">
+                                                <div class="card-block">
+                                                    <div class="row">
+                                                        <div class="col-xl-12 mb-4"> <!-- Access to assessments -->
+                                                            <h5 class="">Access</h5>
+                                                            <hr>
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessments_access" id="view_assigned_assessments" value="view_assigned_assessments" {% if 'view_assigned_assessments' in role_to_edit_permissions %} checked {% endif %} >
+                                                                <label for="view_assigned_assessments" class="cr">Only assigned assessments</label>  
+                                                            </div>
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessments_access" id="view_all_assessments" value="view_all_assessments" {% if 'view_all_assessments' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="view_all_assessments" class="cr">All assessments</label>
+                                                            </div>
+                                                        </div>
+                                                        <div style="margin-bottom: 120px;"></div>
+
+                                                        <div class="col-xl-12 mb-4"> <!-- Specific Actions -->
+                                                            <h5 class="">Specific Actions</h5>
+                                                            <hr>
+                                                            <div class="form-group d-inline checkbox checkbox-primary d-inline">
+                                                                    <input type="checkbox" name="add_assessments" id="add_assessments" value='add_assessments' {% if 'add_assessments' in role_to_edit_permissions %} checked {% endif %}>
+                                                                    <label for="add_assessments" class="cr">Add assessment</label>
+                                                            </div>
+                                                            
+                                                            <div class="form-group d-inline checkbox checkbox-primary d-inline">
+                                                                <input type="checkbox" name="edit_assessments" id="edit_assessments" value="edit_assessments" {% if 'edit_assessments' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="edit_assessments" class="cr">Edit assessment</label>
+                                                            </div>
+
+                                                            <div class="form-group d-inline checkbox checkbox-primary d-inline">
+                                                                <input type="checkbox" name="delete_assessments" id="delete_assessments" value="delete_assessments" {% if 'delete_assessments' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="delete_assessments" class="cr">Delete assessment</label>
+                                                            </div>
+
+                                                            <div class="form-group d-inline checkbox checkbox-primary d-inline">
+                                                                <input type="checkbox" name="generate_report" id="generate_report" value="generate_report" {% if 'generate_report' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="generate_report" class="cr">Generate report</label>
+                                                            </div>
+                                                        </div>
+                                                        <div style="margin-bottom: 120px;"></div>
+
+                                                        <div class="col-xl-12 mb-4"> <!-- Summary -->
+                                                            <h5 class="">Summary</h5>
+                                                            <hr>
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessment_summary" id="r_assessment_summary" value="r_assessment_summary" {% if 'r_assessment_summary' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="r_assessment_summary" class="cr">Read only</label>
+                                                            </div>
+                                                            
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessment_summary" id="w_assessment_summary" value="w_assessment_summary" {% if 'w_assessment_summary' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="w_assessment_summary" class="cr">Read and write</label>
+                                                            </div>
+                                                        </div>
+                                                        <div style="margin-bottom: 120px;"></div>
+
+                                                        <div class="col-xl-12 mb-4"> <!-- Additional Fields  -->
+                                                            <h5 class="">Additional Fields</h5>
+                                                            <hr>
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessment_additional_fields" id="assessment_additional_fields_no" value="" checked>
+                                                                <label for="assessment_additional_fields_no" class="cr">No access</label>
+                                                            </div>
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessment_additional_fields" id="r_assessment_additional_fields" value="r_assessment_additional_fields" {% if 'r_assessment_additional_fields' in role_to_edit_permissions %} checked {% endif %} >
+                                                                <label for="r_assessment_additional_fields" class="cr">Read only</label>
+                                                            </div>
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessment_additional_fields" id="w_assessment_additional_fields" value="w_assessment_additional_fields" {% if 'w_assessment_additional_fields' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="w_assessment_additional_fields" class="cr">Read and write</label>
+                                                            </div>
+                                                        </div>
+                                                        <div style="margin-bottom: 120px;"></div>
+                                                        
+                                                        <div class="col-xl-12 mb-4"> <!-- Vulnerabilities -->
+                                                            <h5 class="">Vulnerabilities</h5>
+                                                            <hr>
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessment_vulnerabilities" id="assessment_vulnerabilities_no"  value="" checked>
+                                                                <label for="assessment_vulnerabilities_no" class="cr">No access</label>
+                                                            </div>
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessment_vulnerabilities" id="r_assessment_vulnerabilities" value="r_assessment_vulnerabilities" {% if 'r_assessment_vulnerabilities' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="r_assessment_vulnerabilities" class="cr">Read only</label>
+                                                            </div>
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessment_vulnerabilities" id="w_assessment_vulnerabilities" value="w_assessment_vulnerabilities" {% if 'w_assessment_vulnerabilities' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="w_assessment_vulnerabilities" class="cr">Read and write</label>
+                                                            </div>
+                                                        </div>
+                                                        <div style="margin-bottom: 120px;"></div>
+
+                                                        <div class="col-xl-12 mb-4"> <!-- Attached files -->
+                                                            <h5 class="">Attached Files</h5>
+                                                            <hr>
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessment_attached_files" id="assessment_attached_files_no"  value="" checked>
+                                                                <label for="assessment_attached_files_no" class="cr">No access</label>
+                                                            </div>
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessment_attached_files" id="r_assessment_attached_files" value="r_assessment_attached_files" {% if 'r_assessment_attached_files' in role_to_edit_permissions %} checked {% endif %} >
+                                                                <label for="r_assessment_attached_files" class="cr">Read only</label>
+                                                            </div>
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessment_attached_files" id="w_assessment_attached_files" value="w_assessment_attached_files" {% if 'w_assessment_attached_files' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="w_assessment_attached_files" class="cr">Read and write</label>
+                                                            </div>
+                                                        </div>
+                                                        <div style="margin-bottom: 120px;"></div>
+
+                                                        <div class="col-xl-12 mb-4"> <!-- Tasks -->
+                                                            <h5 class="">Tasks</h5>
+                                                            <hr>
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessment_tasks" id="assessment_tasks_no"  value="" checked>
+                                                                <label for="assessment_tasks_no" class="cr">No access</label>
+                                                            </div>
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessment_tasks" id="r_assessment_tasks" value="r_assessment_tasks"  {% if 'r_assessment_tasks' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="r_assessment_tasks" class="cr">Read only</label>
+                                                            </div>
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessment_tasks" id="w_assessment_tasks" value="w_assessment_tasks" {% if 'w_assessment_tasks' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="w_assessment_tasks" class="cr">Read and write</label>
+                                                            </div>
+                                                        </div>
+                                                        <div style="margin-bottom: 120px;"></div>
+
+                                                        <div class="col-xl-12 mb-4"> <!-- Chat room -->
+                                                            <h5 class="">Chat Room</h5>
+                                                            <hr>
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessment_chat_room" id="assessment_chat_room_no"  value="" checked>
+                                                                <label for="assessment_chat_room_no" class="cr">No access</label>
+                                                            </div>
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessment_chat_room" id="r_assessment_chat_room" value="r_assessment_chat_room" {% if 'r_assessment_chat_room' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="r_assessment_chat_room" class="cr">Read only</label>
+                                                            </div>
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessment_chat_room" id="w_assessment_chat_room" value="w_assessment_chat_room" {% if 'w_assessment_chat_room' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="w_assessment_chat_room" class="cr">Read and write</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="card tohide" id="visability" style="display:none;">
+                                                <div class="card-block">
+                                                    <div class="row">
+                                                        <div style="margin-bottom: 120px;"></div>
+
+                                                        <div class="col-xl-12 mb-4"> <!-- Dashboard -->
+                                                            <h5 class="">Dashboard</h5>
+                                                            <hr>
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="dashboard" id="dashboard_no" value="" checked>
+                                                                <label for="dashboard_no" class="cr">No Access to dashboard</label>
+                                                            </div>
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="dashboard" id="see_dashboard"  value="see_dashboard"  {% if 'see_dashboard' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="see_dashboard" class="cr">Access to dashboard</label>
+                                                            </div>
+                                                        </div>
+                                                        <div style="margin-bottom: 120px;"></div>
+
+                                                        <div class="col-xl-12 mb-4"> <!-- Calendar -->
+                                                            <h5 class="">Calendar</h5>
+                                                            <hr>
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="calendar" id="calendar_no" value="" checked>
+                                                                <label for="calendar_no" class="cr">No Access to Calendar</label>
+                                                            </div>
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="calendar" id="see_calendar"  value="see_calendar" {% if 'see_calendar' in role_to_edit_permissions %} checked {% endif %} >
+                                                                <label for="see_calendar" class="cr">Access to Calendar</label>
+                                                            </div>
+                                                        </div>
+                                                        <div style="margin-bottom: 120px;"></div>
+
+                                                        <div class="col-xl-12 mb-4"> <!-- Analytics -->
+                                                            <h5 class="">Analytics </h5>
+                                                            <code>for all the application's data</code>
+                                                            <hr>
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="analytics" id="analytics_no" checked value="" >
+                                                                <label for="analytics_no" class="cr">No Access to Analytics</label>
+                                                            </div>
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="analytics" id="see_analytics" value="see_analytics" {% if 'see_analytics' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="see_analytics" class="cr">Access to Analytics</label>
+                                                            </div>
+                                                        </div>
+                                                        <div style="margin-bottom: 120px;"></div>
+                                                        
+                                                        <div class="col-xl-12 mb-4"> <!-- Activites -->
+                                                            <h5 class="">Activites </h5>
+                                                            <code>for all the application's data</code>
+                                                            <hr>
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="activites" id="activites_no" checked value="" >
+                                                                <label for="activites_no" class="cr">No Access to Activites</label>
+                                                            </div>
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="activites" id="see_activities" value="see_activities" {% if 'see_activities' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="see_activities" class="cr">Access to Activites</label>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="card tohide" id="components" style="display:none;">
+                                                <div class="card-block">
+                                                    <div class="row">
+                                                        <div class="col-xl-12 mb-4"> <!-- Clients -->
+                                                            <h5 class="">Clients</h5>
+                                                            <hr>
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="clients" id="clients_no" checked value="" >
+                                                                <label for="clients_no" class="cr">No access</label>
+                                                            </div>
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="clients" id="r_clients" value="r_clients"{% if 'r_clients' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="r_clients" class="cr">Read only</label>
+                                                            </div>  
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="clients" id="w_clients" value="w_clients"{% if 'w_clients' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="w_clients" class="cr">Read and write</label>
+                                                            </div>
+                                                        </div>
+                                                        <div style="margin-bottom: 120px;"></div>
+                                                        
+                                                        <div class="col-xl-12 mb-4"> <!-- Templates -->
+                                                            <h5 class="">Templates</h5>
+                                                            <hr>
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="templates" id="templates_no" checked value="" >
+                                                                <label for="templates_no" class="cr">No access</label>
+                                                            </div>
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="templates" id="r_templates" value="r_templates" {% if 'r_templates' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="r_templates" class="cr">Read only</label>
+                                                            </div>
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="templates" id="w_templates" value="w_templates" {% if 'w_templates' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="w_templates" class="cr">Read and write</label>
+                                                            </div>
+                                                        </div>
+                                                        <div style="margin-bottom: 120px;"></div>
+
+                                                        <div class="col-xl-12 mb-4"> <!-- Vulnerabilities -->
+                                                            <h5 class="">Vulnerabilities</h5>
+                                                            <hr>
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="vulnerabilities" id="vulnerabilities_no" checked value="">
+                                                                <label for="vulnerabilities_no" class="cr">No access</label>
+                                                            </div>
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="vulnerabilities" id="r_vulnerabilities" value="r_vulnerabilities" {% if 'r_vulnerabilities' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="r_vulnerabilities" class="cr">Read only</label>
+                                                            </div>
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="vulnerabilities" id="w_vulnerabilities"   value="w_vulnerabilities" {% if 'w_vulnerabilities' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="w_vulnerabilities" class="cr">Read and write</label>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="card tohide" id="assessment_structures" style="display:none;">
+                                                <div class="card-block">
+                                                    <div class="row">
+                                                        <div class="col-xl-12 mb-4"> <!-- assessment structures -->
+                                                            <h5 class="">Assessment Structures</h5>
+                                                            <hr>
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessment_structures" id="assessment_structures_no" checked value="" >
+                                                                <label for="assessment_structures_no" class="cr">No access</label>
+                                                            </div>
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessment_structures" id="r_assessment_structure" value="r_assessment_structure" {% if 'r_assessment_structure' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="r_assessment_structure" class="cr">Read only</label>
+                                                            </div>  
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="assessment_structures" id="w_assessment_structure" value="w_assessment_structure" {% if 'w_assessment_structure' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="w_assessment_structure" class="cr">Read and write</label>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="card tohide" id="users_teams" style="display:none;">
+                                                <div class="card-block">
+                                                    <div class="row">
+                                                        <div class="col-xl-12 mb-4"> <!-- Users -->
+                                                            <h5 class="">Users & Teams & Roles</h5>
+                                                            <hr>
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="users_teams_roles" id="users_teams_roles_no" checked value="" >
+                                                                <label for="users_teams_roles_no" class="cr">No access</label>
+                                                            </div>
+
+                                                            {% comment %} <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="users_teams_roles" id="r_users" value="r_users" {% if 'r_users' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="r_users" class="cr">Read only</label>
+                                                            </div>   {% endcomment %}
+
+                                                            <div class="form-group d-inline radio radio-primary d-inline">
+                                                                <input type="radio" name="users_teams_roles" id="w_users" value="w_users" {% if 'w_users' in role_to_edit_permissions %} checked {% endif %}>
+                                                                <label for="w_users" class="cr">Read and write</label>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                                </div>
+                            <!-- [ Main Content ] end -->
+                            </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <!-- [ Main Content ] end -->
+
+
+        
+    
+    
+{% endblock content %}
+
+
+{% block javascripts %}
+<!-- Show only needed cards  -->
+<script>
+    function showCard(cardId) {
+        var cards = document.querySelectorAll('.tohide');
+        for (var i = 0; i < cards.length; i++) {
+            cards[i].style.display = 'none';
+        }
+        document.getElementById(cardId).style.display = 'block';
+
+        var links = document.querySelectorAll('.nav-link');
+        for (var i = 0; i < links.length; i++) {
+            links[i].classList.remove('active');
+        }
+        document.getElementById(cardId + 'Link').classList.add('active');
+    }
+</script>
+
+{% if role_to_edit.name == 'Manager' %} 
+<script> // disable all the input fileds (Make it read only if it is the manager)
+  const inputElements = document.querySelectorAll('input, select, textarea'); 
+  inputElements.forEach(element => {element.disabled = true;}); 
+</script>
+{% endif %}
+
+<script>const originalRoleName = "{{role_to_edit.name|escapejs}}";</script>
+{% endblock javascripts %}

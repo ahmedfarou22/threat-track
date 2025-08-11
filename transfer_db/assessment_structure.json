@@ -1,0 +1,17 @@
+[
+{
+  "model": "assessment_structures.assessment_structure",
+  "pk": 18,
+  "fields": {
+    "name": "Threat Track Default Structure",
+    "description": "",
+    "s_fields": {
+      "Summary": "",
+      "Scope": "",
+      "Notes": ""
+    },
+    "a_fields": null,
+    "v_fields": null
+  }
+}
+]

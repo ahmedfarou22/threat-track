@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Assessment Overview {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+
+{% block content %}
+    {% include 'includes/overview_header.html' %}
+        <div class="col-xl-8 col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-3"><i class=" m-r-5"></i>Assessment Reporting Details</h5>
+                </div>
+                <div class="card-block">
+                    {% for key, value in assessment_dict.items %}
+                    <div>
+                        <h6>{{key}}</h6>
+                        <hr>
+                        <textarea class="form-control" readonly rows="2">{{value}}</textarea>
+                        <br><br>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-lg-12 task-detail-right">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Select Template From Components</h5>
+                </div>
+                <div class="card-block">
+                        <div class="form-group">
+                            <form method="post" action="" enctype="multipart/form-data" id="validateForm"> {% csrf_token %}
+                                <div class="input-group">
+                                    <select name="template_from_comp" class="form-control validate-required" id="client"> 
+                                        <option value="">Select template</option>
+                                        {% for template in templates%}
+                                        <option value="{{ template.id }}">{{template.name }}</option>  
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <span class="validation-message" id="template_from_comp-validation-message"></span>
+                                <br>
+                                <button type="submit" class="btn btn-primary" style="width:100%">Download Generated Report</button>
+                            </form>
+                        </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header">
+                    <h5>Upload Your Template (.docx)</h5>
+                </div>
+                <div class="card-block">
+                        <div class="form-group">
+                            <form method="post" action="" enctype="multipart/form-data" id="validateForm2"> {% csrf_token %}
+                                <div class="input-group">
+                                    <input type="file" name="template_from_upload" class="form-control validate-required validate-file-docx" >
+                                </div>
+                                <span class="validation-message" id="template_from_upload-validation-message"></span>
+                                <br>
+                                <button type="submit" class="btn btn-primary" style="width:100%">Download Generated Report</button>
+                            </form>
+                        </div>
+                </div>
+            </div>
+        </div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

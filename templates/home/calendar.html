@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Calendar {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+{% comment %} <link rel="stylesheet" href="https://appsrv1-147a1.kxcdn.com/datta-able-pro-v100/css/plugins/main.css"> {% endcomment %}
+<link rel="stylesheet" href="{% static 'plugins/full-calendar/full-calendar.css' %}">
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="pcoded-main-container">
+    <div class="pcoded-wrapper">
+        <div class="pcoded-content">
+            <div class="pcoded-inner-content">
+                
+                <div class="col-md-12">
+                    <div class="page-header-title">
+                        <h5 class="m-b-10">Calendar</h5>
+                    </div>
+                    
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/home/dashboard"><i
+                                    class="feather icon-home"></i></a></li>
+                        <li class="breadcrumb-item"><a href="#!">Calendar</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-sm-12">
+                    <div class="card fullcalendar-card">
+                        <div class="card-header">
+                            <h5>Calendar</h5>
+                        </div>
+
+                        <div class="card-block">
+                            <div class="row">
+                                <div class="col-xl-12 col-md-12">
+                                    <div id='calendar' class='calendar'></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+</div>
+
+{% comment %} <script src="https://appsrv1-147a1.kxcdn.com/datta-able-pro-v100/js/plugins/main.min.js"></script> {% endcomment %}
+<script src="{% static 'plugins/full-calendar/full-calendar.js' %}"></script>
+{{ block.super }}
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        var header;
+        if (window.innerWidth <= 768) { 
+            header = {
+                left: '',
+                center: 'title',
+                right: 'prev,next'
+            };
+        } else {
+            header = {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek'
+            };
+        }
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            headerToolbar: header,
+
+            themeSystem: 'bootstrap',
+            navLinks: true,
+            droppable: false,
+            selectable: false,
+            editable: false,
+            dayMaxEvents: 3,
+            handleWindowResize: true,
+            height: 650,
+            events: {% autoescape off %}{{ events|safe }}{% endautoescape %},
+        });
+        calendar.render();
+    });
+</script>
+
+<script>
+    function setBlackColorForHeaders() {
+        const headerLinks = document.querySelectorAll('.fc-col-header-cell-cushion');
+        for (const link of headerLinks) {
+            link.style.color = '#505050';
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        setBlackColorForHeaders();
+    });
+    
+</script>
+
+{% endblock content %}
+{% block javascripts %}
+{% endblock javascripts %}

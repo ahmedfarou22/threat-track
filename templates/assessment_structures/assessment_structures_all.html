@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Assessment Structures  {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+    <!-- [ Main Content ] start -->
+    <section class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <!-- [ breadcrumb ] start -->
+                    <div class="page-header">
+                        <div class="page-block">
+                            <div class="row align-items-center">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        <h5 class="m-b-10">All Assessment Structures</h5>
+                                    </div>
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/home"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{% url 'assessment_structures' %}">Assessment Structures</a></li>
+                                    </ul>
+                                </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        {% comment %} <h5 class="m-b-10">Clients</h5> good header {% endcomment %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- [ breadcrumb ] end -->
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <!-- [ Main Content ] start -->
+                            <div class="row">
+                                <!-- [ Hover-table ] start -->
+                                <div class="col-xl-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Assessment Structures</h5>
+                                            {% if 'w_assessment_structure' in USER_PERMISSIONS %}
+                                            <code> <a href="{% url 'assessment_structure_add' %}" class="nav-link ">Add New Assessment Structure</a> </code>
+                                            {% endif %}
+                                        </div>                                    
+                                        
+                                        <div class="card-block table-border-style">
+                                            <div class="table-responsive">
+                                                <form method="GET" action="">
+                                                    <div class="input-group mb-3">
+                                                        <input type="text" name="q" class="form-control" placeholder="Search Assessment Structures">
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-primary" type="submit">Search</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Name</th>
+                                                            <th>Description</th>
+                                                            {% if 'w_assessment_structure' in USER_PERMISSIONS %}
+                                                            <th>Actions</th>
+                                                            {% endif %}
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for assessment_structure in assessment_structures_to_show %}
+                                                        <tr>
+                                                            <td><a href="{% url 'assessment_structure_edit' assessment_structure_id=assessment_structure.id %}"> {{ assessment_structure.name }}</a> </td>  
+                                                            <td>{{ assessment_structure.description }}</td>
+                                                            
+                                                            {% if 'w_assessment_structure' in USER_PERMISSIONS %}
+                                                            <td>
+                                                                <a href="{% url 'assessment_structure_edit' assessment_structure_id=assessment_structure.id %}" class="btn btn-primary">Edit</a>
+                                                                <a href="#" onclick="confirmAndSubmitForm('{{ assessment_structure.id }}');" class="btn btn-danger">Delete</a>
+                                                            </td>
+                                                                <form method="post" action="{% url 'assessment_structure_delete' %}" style="display: inline-block;">{% csrf_token %}
+                                                                    <input type="text"  name="assessment_structure_id_delete" value="{{ assessment_structure.id }}" hidden>
+                                                                    <button class="btn btn-icon" type="submit" hidden id="assessment_structure_delete_{{ assessment_structure.id }}"></button>
+                                                                </form>
+                                                                <script>function confirmAndSubmitForm(key) {if (confirm('Are you sure you want to delete assessment structure ' + key + '?')) {    document.getElementById('assessment_structure_delete_'+ key).click();}}</script>
+                                                            {% endif %}
+                                                        </tr>                                         
+                                                    {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                                {% if assessment_structures_to_show.paginator.num_pages > 1 %}
+                                                <div class="pagination-container">
+                                                    <nav aria-label="...">
+                                                        <ul class="pagination">
+                                                            {% if assessment_structures_to_show.has_previous %}
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="First">
+                                                                    <span aria-hidden="true">&laquo;</span>
+                                                                    <span class="sr-only">First</span>
+                                                                </a>
+                                                            </li>
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page={{ assessment_structures_to_show.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Previous">
+                                                                    <span aria-hidden="true">&lsaquo;</span>
+                                                                    <span class="sr-only">Previous</span>
+                                                                </a>
+                                                            </li>
+                                                            {% endif %}
+                                                            {% for i in assessment_structures_to_show.paginator.page_range %}
+                                                            {% if assessment_structures_to_show.number == i %}
+                                                            <li class="page-item active"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span></li>
+                                                            {% elif i > assessment_structures_to_show.number|add:'-5' and i < assessment_structures_to_show.number|add:'5' %}
+                                                            <li class="page-item"><a class="page-link" href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ i }}</a></li>
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                            {% if assessment_structures_to_show.has_next %}
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page={{ assessment_structures_to_show.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Next">
+                                                                    <span aria-hidden="true">&rsaquo;</span>
+                                                                    <span class="sr-only">Next</span>
+                                                                </a>
+                                                            </li>
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page={{ assessment_structures_to_show.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Last">
+                                                                    <span aria-hidden="true">&raquo;</span>
+                                                                    <span class="sr-only">Last</span>
+                                                                </a>
+                                                            </li>
+                                                            {% endif %}
+                                                        </ul>
+                                                    </nav>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- [ Hover-table ] end -->
+
+  
+
+                            </div>
+                            <!-- [ Main Content ] end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+    <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

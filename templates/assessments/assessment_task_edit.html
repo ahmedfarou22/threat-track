@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %} Edit Task {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <!-- [ Main Content ] start -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        <h5 class="m-b-10">Edit Task</h5>
+                                    </div>
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{% url 'assessments' %}">Assessments</a></li>
+                                        <li class="breadcrumb-item"><a href="{% url 'assessment_tasks' assessment.id %}">Tasks</a></li>
+                                        <li class="breadcrumb-item"><a>Edit tasks</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Edit Task </h5>
+                                        </div>
+                                        <form role="form" method="post" action="" enctype="multipart/form-data" id="validateForm">
+                                        {% csrf_token %}
+                                        <div class="card-block">
+                                            <div class="row">
+                                                <div class="col-sm-12 mb-4">
+                                                    <div class="form-group">
+                                                        <label>Task</label>
+                                                        <textarea class="form-control validate-required" name="f_task" rows='2' >{{task_to_edit.task}}</textarea>
+                                                        <span class="validation-message" id="f_task-validation-message"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12 mb-4">
+                                                    <div class="form-group">
+                                                        <label>Status</label>
+                                                        <select name="f_status" class="form-control form-control-sm">
+                                                            {% for status in statuss_to_load %}
+                                                            <option value="{{status.id}}" {% if task_to_edit.status.name == status.name %} selected {% endif %}>{{status.name}}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                             
+                                            
+                                                <div class="col-sm-12 mb-4">
+                                                    <div class="card-block user-box assign-user">
+                                                        <div class="row">
+                                                            {% for user in assigned_users %}
+                                                                <div class="col-md-3 mb-4">
+                                                                    <div class="media">
+                                                                        <div class="media-left media-middle me-3">
+                                                                            {% if user.userprofile.profile_pic %}
+                                                                                <img class="img-radius" src="{{ user.userprofile.profile_pic.url }}" alt="chat-user">
+                                                                            {% else %}
+                                                                                <img class="img-radius" src="{% static "main_profile_pic_avatar.jpg" %}" alt="chat-user">
+                                                                            {% endif %}
+                                                                        </div>
+                                                                        <div class="media-body" style="padding-inline: 10px 20px; padding-top: {% if forloop.counter0|divisibleby:4 %}20px{% endif %}">
+                                                                            <h6>{{ user.first_name }} {{ user.last_name }}</h6>
+                                                                            <p>{{ user.username }} | {{ user.userprofile.role }} </p>
+                                                                        </div>
+                                                                        <div class="checkbox checkbox-primary d-inline">
+                                                                            <input type="checkbox" name="assigned_users" id="assigned_users_{{ user.id }}" value="{{ user.id }}" {% if user in task_to_edit.assigned_to.all %} checked {% endif %}>
+                                                                            <label for="assigned_users_{{ user.id }}" class="cr"></label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                {% if forloop.counter|divisibleby:4 %}
+                                                                    </div><div class="row">
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                            
+                                                <div class="col-sm-12 mb-2">
+                                                    <div class="form-group">
+                                                        <a href="{% url 'assessment_tasks' assessment_id=assessment.id  %}" class="btn btn-secondary">Back</a>
+                                                        <button type="submit" class="btn btn-primary">Edit task</button>
+                                                    </form>
+                                                    </div>
+                                                </div>  
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- [ Main Content ] end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <!-- [ Main Content ] end -->
+    <script>
+        const userDivs = document.querySelectorAll('.media');
+        userDivs.forEach(function(div) {
+            const checkbox = div.querySelector('input[type="checkbox"]');
+            div.addEventListener('click', function() {
+                checkbox.checked = !checkbox.checked;
+            });
+        });
+    </script>
+    
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            form.querySelectorAll(".is-invalid").forEach((element) => {
+                element.classList.remove("is-invalid");
+            });
+            const task = document.querySelector('textarea[name="f_task"]');
+            const validationMessages=[];
+
+            //validate task
+            if (task.value.trim() === "") {
+                task.classList.add("is-invalid");
+                errorContainer = document.querySelector("#f_task-error");
+                errorContainer.textContent = "Task cannot be empty";
+                validationMessages.push("Task cannot be empty");
+            }else{
+                const errorContainer = document.querySelector("#f_task-error");
+                errorContainer.textContent = "";
+            }
+
+            if (validationMessages.length > 0) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+{% endblock javascripts %}

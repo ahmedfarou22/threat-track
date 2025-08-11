@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %} Add Team {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <!-- [ Main Content ] start -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        <h5 class="m-b-10">Add New Team</h5>
+                                    </div>
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/home"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{% url "teams_all" %}">Teams</a></li>
+                                        <li class="breadcrumb-item"><a href="">Add team</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Add Team </h5>
+                                        </div>
+                                        <form role="form" method="post" action="" enctype="multipart/form-data" id="validateForm">
+                                        {% csrf_token %}
+                                        <div class="card-block">
+                                            <div class="row">
+
+                                                <div class="col-sm-12 mb-4">
+                                                    <div class="form-group">
+                                                        <label>Name</label>
+                                                        <input type="text" name="teams_name"  class="form-control validate-required" id="teams_name_custom">
+                                                        <span class="validation-message" id="teams_name-validation-message"></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-12 mb-4">
+                                                    <div class="form-group">
+                                                        <label>Description</label>
+                                                        <textarea class="form-control" name="description" rows='4'></textarea>
+                                                    </div>
+                                                </div>
+                                             
+                                            
+                                            <div class="col-sm-12 mb-4">
+                                                <div class="card-block user-box assign-user">
+                                                    <div class="row">
+                                                        {% for user in users_all %}
+                                                            <div class="col-md-3 mb-4">
+                                                                <div class="media">
+                                                                    <div class="media-left media-middle me-3">
+                                                                        {% if user.userprofile.profile_pic %}
+                                                                            <img class="img-radius" src="{{ user.userprofile.profile_pic.url }}" alt="chat-user">
+                                                                        {% else %}
+                                                                            <img class="img-radius" src="{% static "main_profile_pic_avatar.jpg" %}" alt="chat-user">
+                                                                        {% endif %}
+                                                                    </div>
+                                                                    <div class="media-body" style="padding-inline: 10px 20px; padding-top: {% if forloop.counter0|divisibleby:4 %}20px{% endif %}">
+                                                                        <h6>{{ user.first_name }} {{ user.last_name }}</h6>
+                                                                        <p>{{ user.username }} | {{ user.userprofile.role }} </p>
+                                                                    </div>
+                                                                    <div class="checkbox checkbox-primary d-inline">
+                                                                        <input type="checkbox" name="assigned_users" id="assigned_users_{{ user.id }}" value="{{ user.id }}" {% if user in test %}checked{% endif %} class="validate-required">
+                                                                        <label for="assigned_users_{{ user.id }}" class="cr"></label>
+                                                                        
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            {% if forloop.counter|divisibleby:4 %}
+                                                                </div><div class="row">
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                                <span class="validation-message" id="assigned_users-validation-message" style="display: block; text-align: center;"></span>
+                                            </div>
+                                            
+                                            
+                                            <div class="col-sm-12 mb-2">
+                                                <div class="form-group">
+                                                    <a href="{% url 'teams_all' %}" class="btn btn-secondary">Back</a>
+                                                    <button type="submit" class="btn btn-primary">Add team</button>
+                                                </form>
+                                                </div>
+                                            </div>  
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- [ Main Content ] end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<!-- Click any where cheakbox -->
+<script>
+    const userDivs = document.querySelectorAll('.media');
+    userDivs.forEach(function(div) {
+        const checkbox = div.querySelector('input[type="checkbox"]');
+        div.addEventListener('click', function() {
+            checkbox.checked = !checkbox.checked;
+        });
+    });
+</script>
+
+<script>const originalTeamName = '';</script>
+{% endblock javascripts %}

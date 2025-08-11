@@ -1,0 +1,26 @@
+[
+{
+  "model": "assessments.assessmentstatus",
+  "pk": 1,
+  "fields": {
+    "name": "In progress",
+    "description": ""
+  }
+},
+{
+  "model": "assessments.assessmentstatus",
+  "pk": 2,
+  "fields": {
+    "name": "Closed",
+    "description": ""
+  }
+},
+{
+  "model": "assessments.assessmentstatus",
+  "pk": 3,
+  "fields": {
+    "name": "Awaiting approval",
+    "description": ""
+  }
+}
+]

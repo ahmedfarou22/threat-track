@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Assessment Chat Room {% endblock %} 
+
+
+{% block stylesheets %}
+<style>
+    #chat-container::-webkit-scrollbar {display: none;-ms-overflow-style: none;scrollbar-width: none;}
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+    {% include 'includes/overview_header.html' %}
+    <div class="card-body msg-block">
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="card" style="max-height: 500px; overflow-y: scroll; " id="chat-container">
+                    <div class="card-block">
+                        <div class="h-list-body">
+                                <div class="main-friend-chat">
+                                    {% if messages_to_view %}
+                                    {% for message in messages_to_view %}
+                                        {% if message.sender == request.user %}
+                                            <div class="media chat-messages">
+                                                <div class="media-body chat-menu-reply">
+                                                    <div class="">
+                                                        <p class="chat-cont">{{message.message}}</p>
+                                                    </div>
+                                                    <p class="chat-time">{{message.timestamp}}</p>
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="media chat-messages">
+                                                <a class="media-left photo-table">
+                                                {% if message.sender.userprofile.profile_pic %}
+                                                <img class="media-object img-radius img-radius m-t-5" src="{{ message.sender.userprofile.profile_pic.url }}" alt="Profile pic">
+                                                {% else %}
+                                                <img class="media-object img-radius img-radius m-t-5" src="{% static "main_profile_pic_avatar.jpg" %}" alt="Profile pic">
+                                                {% endif %} 
+                                                    
+                                                <div class="media-body chat-menu-content">
+                                                    <div class="">
+                                                        <p class="chat-cont">{{message.message}}</p>
+                                                    </div>
+                                                    <p class="chat-time"></p>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    {% else %}
+                                    <div class="media-body chat-menu-content">
+                                        <div>
+                                            <p class="chat-cont">No Messages Sent</p>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+
+                {% if 'w_assessment_chat_room' in USER_PERMISSIONS %}
+                <div class="card">
+                    <div class="card-header">
+                        <form method="POST"> {% csrf_token %}
+                        <div class="msg-form">
+                            <div class="input-group mb-0">
+                                <input type="text" class="form-control" placeholder="Message . . ." name="message"> 
+                                <button class="btn btn-primary btn-icon btn-msg-send" type="submit"><i class="feather icon-arrow-right"></i></button>
+                            </div>
+                        </div>
+                    </form>
+                    </div>
+                </div>
+                {% endif %}
+                
+            </div>
+        </div>
+    </div>   
+    <script>
+        var chatContainer = document.getElementById("chat-container");
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+    </script>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+{% endblock javascripts %}

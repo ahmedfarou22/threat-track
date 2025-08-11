@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %} Cahnge Password {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <!-- [ Main Content ] start -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        <h5 class="m-b-10">Change Password</h5>
+                                    </div>
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/home"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="">Change password</a></li>
+                                        <li class="breadcrumb-item"><a href="">{{user_to_change_pass.first_name}} {{user_to_change_pass.last_name}}</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Change Password for {{user_to_change_pass.username}}</h5>
+                                        </div>
+                                        <form role="form" method="post" action="" id="validateForm">
+                                        {% csrf_token %}
+                                        <div class="card-block">
+                                            <div class="row">
+                                                
+                                                <div class="col-sm-12 mb-4">
+                                                    <div class="form-group">
+                                                        <label>Your Password</label>
+                                                        <input type="password" name="admin_password" class="form-control validate-required">
+                                                        <span class="validation-message" id="admin_password-validation-message"></span>
+                                                    </div>
+                                                </div>   
+
+
+                                                <div class="col-sm-12 mb-4">
+                                                    <div class="form-group">
+                                                        <label>New Password</label>
+                                                        <input type="password" name="new_password" class="form-control validate-required validate-password">
+                                                        <span class="validation-message" id="new_password-validation-message"></span>
+                                                    </div>
+                                                </div>                                              
+                                                
+                                                
+                                                <div class="col-sm-12 mb-2">
+                                                    <div class="form-group">
+                                                        <a href="{% url 'users_all' %}" class="btn btn-secondary">Back</a>
+                                                        <button type="submit" class="btn btn-danger">Change password</button>
+                                                    </form>
+                                                    </div>
+                                                </div>   
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- [ Main Content ] end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+{% endblock javascripts %}

@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %} Add User {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <!-- [ Main Content ] start -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        <h5 class="m-b-10">Edit User</h5>
+                                    </div>
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/home"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{% url "users_all" %}">{{app|capfirst}}</a></li>
+                                        <li class="breadcrumb-item"><a href="">Edit user</a></li>
+                                        <li class="breadcrumb-item"><a href="">{{user.first_name}} {{user.last_name}}</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Edit User Info</h5>
+                                        </div>
+                                        <form role="form" method="post" action="" enctype="multipart/form-data" id="validateForm">
+                                        {% csrf_token %}
+                                        <div class="card-block">
+                                            <div class="row">
+
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label>First name</label>
+                                                        <input type="text" name="first_name"  value="{{user.first_name}}"  class="form-control validate-required validate-first-last-name">
+                                                        <span class="validation-message" id="first_name-validation-message"></span>
+                                                    </div>
+                                                </div>                                              
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label>Last name</label>
+                                                        <input type="text" name="last_name"  value="{{user.last_name}}" class="form-control validate-required validate-first-last-name"> 
+                                                        <span class="validation-message" id="last_name-validation-message"></span> 
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="add">Phone number</label>
+                                                        <input type="phone" name="phone_number"  value="{{user.userprofile.phone_number}}" class="form-control validate-required validate-phone">
+                                                        <span class="validation-message" id="phone_number-validation-message"></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="add">Email</label>
+                                                        <input type="text" name="email"  value="{{user.email}}" class="form-control validate-required validate-email">
+                                                        <span class="validation-message" id="email-validation-message"></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="add">Role</label>
+                                                        <select name="role" class="form-control">
+                                                            {% for role in user_roles %}
+                                                            <option value="{{ role.id }}" {% if user.userprofile.role.name == role.name %}selected {%endif%}>{{ role.name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="add">Profile picture</label>
+                                                        <input type="file" name="profile_picture" class="form-control validate-file-image">
+                                                        <span class="validation-message" id="profile_picture-validation-message"></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-12 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="add">Username</label>
+                                                        <input type="text" name="username"  value="{{user.username}}" class="form-control validate-required" id="username_custom">
+                                                        <span class="validation-message" id="username-validation-message"></span>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="col-sm-12 mb-2">
+                                                    <div class="form-group">
+                                                        <a href="{% url 'users_all' %}" class="btn btn-secondary">Back</a>
+                                                        <button type="submit" class="btn btn-primary">Update user</button>
+                                                    </form>
+                                                    </div>
+                                                </div>   
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- [ Main Content ] end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script>const originalUsername = "{{ user.username|escapejs }}";</script>
+{% endblock javascripts %}

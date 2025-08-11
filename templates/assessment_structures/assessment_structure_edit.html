@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %} Assessment Structure Edit {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<!-- [ Main Content ] end -->
+<div class="pcoded-main-container">
+    <div class="pcoded-wrapper">
+        <div class="pcoded-content">
+            <div class="pcoded-inner-content">
+                <!-- [ breadcrumb ] start -->
+                <div class="page-header">
+                    <div class="page-block">
+                        <div class="row align-items-center">
+                            <div class="col-md-12">
+                                <div class="page-header-title">
+                                    <h5 class="m-b-10">Edit Assessment Structure</h5>
+                                </div>
+                                <ul class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="/home"><i class="feather icon-home"></i></a></li>
+                                    <li class="breadcrumb-item"><a href="{% url 'assessment_structures' %}">{{app|capfirst}}</a></li>
+                                    <li class="breadcrumb-item"><a href="">Edit Assessment Structure</a></li>
+                                </ul>
+                            </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="page-header-title">
+                                    {% comment %} <h5 class="m-b-10">Clients</h5> good header {% endcomment %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- [ breadcrumb ] end -->
+                <div class="main-body">
+                    <div class="row">
+                        <div class="col-xl-4 col-lg-12 task-detail-left">
+                            {% if 'w_assessment_structure' in USER_PERMISSIONS%} 
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Add Additional Field - {{assessment_structure.name}}</h5>
+                                </div>
+                                <div class="card-block">
+                                    <form method="post" enctype="multipart/form-data" id="validateForm">
+                                        {% csrf_token %}
+                                        <div class="form-group">
+
+                                            <div class="form-group">
+                                                <label>Additional Filed for</label>
+                                                <select name="af_for" class="form-control">
+                                                    <option value="summary">Summary</option>
+                                                    <option value="additional_field">Additional Fields</option>
+                                                    <option value="vulnerability">Vulnerability</option>
+                                                </select>
+                                            </div>
+                                            
+                                           <div class="form-group">
+                                                <label for="custom_key">Name of new filed</label>
+                                                <input type="text" name="custom_key" class="form-control validate-required">
+                                                <span class="validation-message" id="custom_key-validation-message"></span>
+                                            </div>
+                                            <div class="col-sm-12 mb-2">
+                                                <div class="form-group text-center">
+                                                    <button type="submit" class="btn btn-primary">Add new field</button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Edit Assessment Structure</h5>
+                                </div>
+                                <form method="post" action="" id="validateForm2">{% csrf_token %}
+                                    <div class="card-block">
+                                        <div class="row">
+                                            <div class="col-sm-12 mb-4">
+                                                <div class="form-group">
+                                                    <label>Name</label>
+                                                    <input type="text" value="{{assessment_structure.name}}" name="as_name" class="form-control validate-required">
+                                                    <span class="validation-message" id="as_name-validation-message"></span>
+                                                </div>
+                                            </div>                                                
+                                            <div class="col-sm-12 mb-4">
+                                                <div class="form-group">
+                                                    <label>Description</label>
+                                                    <textarea rows="4" class="form-control" name="as_description">{{assessment_structure.description}}</textarea> 
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-12 mb-2">
+                                                <div class="form-group text-center">
+                                                    <a href="{% url 'assessment_structures' %}" class="btn btn-secondary">Back</a>
+                                                    {% if 'w_assessment_structure' in USER_PERMISSIONS%} 
+                                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                                    {% endif %}
+                                                </div>
+                                            </div>   
+                                        
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                        
+                        
+
+                        <div class="col-xl-8 col-lg-12" >
+                            <div class="row">
+                                <div class="col-xl-12 col-lg-12"><!-- Simple Header Pill -->
+                                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" href="#" id="summaryLink">Summary</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#" id="assessmentLink">Additional Fields</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#" id="vulnerabilityLink">Vulnerability</a>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            <div id="loading-spinner" class="d-flex justify-content-center"></div>
+                            <script> document.addEventListener("DOMContentLoaded", function () {document.getElementById('loading-spinner').style.display = 'flex';document.getElementById('page-content').style.display = 'none';setTimeout(function () {document.getElementById('loading-spinner').style.display = 'none';document.getElementById('page-content').style.display = 'block';}, 100);});</script>
+                            
+                            <div class="col-xl-12 col-lg-12" id="page-content" style="display: none;">
+                                {% for key, value in assessment_structure.s_fields.items %} <!-- View -->
+                                    <div class="card summary_af" >
+                                        <div class="card-header">
+                                            <h5 class="mb-3"><i class=" m-r-5"></i>{{ key }}</h5>
+                                                {% if 'w_assessment_structure' in USER_PERMISSIONS%}
+                                                <code><a href="/assessment_structures/assessment_structure_field_edit/{{assessment_structure.id}}/s/{{key}}"><i class="fas fa-edit text-info" title="Edit {{key}}" ></i></a></code>
+                                                <code> <a href="#" onclick="confirmAndSubmitForm('{{ key }}');"><i class="fas fa-trash-alt text-info ml-2"></i></a> </code>
+                                                
+                                                <form method="post" action="{% url "assessment_structure_field_delete" %}" style="display: inline-block;">{% csrf_token %}
+                                                    <input type="text"  name="id" value="{{ assessment_structure.id }}" hidden>
+                                                    <input type="text"  name="for" value="s" hidden>
+                                                    <input type="text"  name="key" value="{{ key }}" hidden>
+                                                    <button class="btn btn-icon" type="submit" hidden id="s_field_delete_{{key}}"></button>
+                                                </form> 
+                                                <script>function confirmAndSubmitForm(key) {if (confirm('Are you sure you want to delete field ' + key + '?')) {    document.getElementById('s_field_delete_' + key).click();}}</script>
+                                                {% endif %}
+                                        </div>
+                                        <div class="card-block">
+                                            <div class="m-b-20">
+                                                <textarea class="editor form-control" name="s_{{key}}" rows='4'>{{value}}</textarea>                                    
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+
+                                {% for key, value in assessment_structure.a_fields.items %}     
+                                    <div class="card assessment_af">
+                                        <div class="card-header">
+                                            <h5 class="mb-3"><i class=" m-r-5"></i>{{ key }}</h5>
+                                            {% if 'w_assessment_structure' in USER_PERMISSIONS%}
+                                            <code><a href="/assessment_structures/assessment_structure_field_edit/{{assessment_structure.id}}/a/{{key}}"><i class="fas fa-edit text-info" title="Edit {{key}}" ></i></a></code>
+                                            <code> <a href="#" onclick="confirmAndSubmitForm('{{ key }}');"><i class="fas fa-trash-alt text-info ml-2"></i></a> </code>
+                                            
+                                            <form method="post" action="{% url "assessment_structure_field_delete" %}" style="display: inline-block;">{% csrf_token %}
+                                                <input type="text"  name="id" value="{{ assessment_structure.id }}" hidden>
+                                                <input type="text"  name="for" value="a" hidden>
+                                                <input type="text"  name="key" value="{{ key }}" hidden>
+                                                <button class="btn btn-icon" type="submit" hidden id="a_field_delete_{{key}}"></button>
+                                            </form> 
+                                            <script>function confirmAndSubmitForm(key) {if (confirm('Are you sure you want to delete field ' + key + '?')) {    document.getElementById('a_field_delete_' + key).click();}}</script>
+                                            
+                                            {% endif %}
+                                        </div>
+                                        <div class="card-block">
+                                            <div class="m-b-20">
+                                                <textarea class="editor form-control" name="a_{{key}}" rows='4'>{{value}}</textarea>                                    
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+
+                                {% for key, value in assessment_structure.v_fields.items %}
+                                    <div class="card vulnerability_af"> <!-- Assessment Summary -->
+                                        <div class="card-header">
+                                            <h5 class="mb-3"><i class=" m-r-5"></i>{{ key }}</h5>
+                                            {% if 'w_assessment_structure' in USER_PERMISSIONS%} 
+                                            <code><a href="/assessment_structures/assessment_structure_field_edit/{{assessment_structure.id}}/v/{{key}}"><i class="fas fa-edit text-info" title="Edit {{key}}" ></i></a></code>
+                                            <code> <a href="#" onclick="confirmAndSubmitForm('{{ key }}');"><i class="fas fa-trash-alt text-info ml-2"></i></a> </code>
+                                            
+                                            <form method="post" action="{% url "assessment_structure_field_delete" %}" style="display: inline-block;">{% csrf_token %}
+                                                <input type="text"  name="id" value="{{ assessment_structure.id }}" hidden>
+                                                <input type="text"  name="for" value="v" hidden>
+                                                <input type="text"  name="key" value="{{ key }}" hidden>
+                                                <button class="btn btn-icon" type="submit" hidden id="v_field_delete_{{key}}"></button>
+                                            </form> 
+                                            <script>function confirmAndSubmitForm(key) {if (confirm('Are you sure you want to delete field ' + key + '?')) {    document.getElementById('v_field_delete_' + key).click();}}</script>
+                                            
+                                            
+                                            {% endif %}
+                                        </div>
+                                        <div class="card-block">
+                                            <div class="m-b-20">
+                                                <textarea class="editor form-control" name="v_{{key}}" rows='4'>{{value}}</textarea>                                    
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const summaryLink = document.getElementById('summaryLink');
+                            const assessmentLink = document.getElementById('assessmentLink');
+                            const vulnerabilityLink = document.getElementById('vulnerabilityLink');
+                            const summaryCards = document.querySelectorAll('.summary_af');
+                            const assessmentCards = document.querySelectorAll('.assessment_af');
+                            const vulnerabilityCards = document.querySelectorAll('.vulnerability_af');
+                            
+                            // Show summary cards and hide assessment and vulnerability cards by default
+                            summaryCards.forEach(card => card.style.display = 'block');
+                            assessmentCards.forEach(card => card.style.display = 'none');
+                            vulnerabilityCards.forEach(card => card.style.display = 'none');
+                            summaryLink.classList.add('active');
+                            
+                            summaryLink.addEventListener('click', function() {
+                                summaryCards.forEach(card => card.style.display = 'block');
+                                assessmentCards.forEach(card => card.style.display = 'none');
+                                vulnerabilityCards.forEach(card => card.style.display = 'none');
+                                
+                                summaryLink.classList.add('active');
+                                assessmentLink.classList.remove('active');
+                                vulnerabilityLink.classList.remove('active');
+                            });
+                            
+                            assessmentLink.addEventListener('click', function() {
+                                summaryCards.forEach(card => card.style.display = 'none');
+                                assessmentCards.forEach(card => card.style.display = 'block');
+                                vulnerabilityCards.forEach(card => card.style.display = 'none');
+                                
+                                summaryLink.classList.remove('active');
+                                assessmentLink.classList.add('active');
+                                vulnerabilityLink.classList.remove('active');
+                            });
+                            
+                            vulnerabilityLink.addEventListener('click', function() {
+                                summaryCards.forEach(card => card.style.display = 'none');
+                                assessmentCards.forEach(card => card.style.display = 'none');
+                                vulnerabilityCards.forEach(card => card.style.display = 'block');
+                                
+                                summaryLink.classList.remove('active');
+                                assessmentLink.classList.remove('active');
+                                vulnerabilityLink.classList.add('active');
+                            });
+                        });
+                        </script>
+                        
+{% endblock content %}
+
+
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+{% if 'w_assessment_structure' not in USER_PERMISSIONS%} 
+    <script> // disable all the input fileds (Make it read only)
+        const inputElements = document.querySelectorAll('input, select, textarea'); 
+        inputElements.forEach(element => {element.disabled = true;}); 
+    </script>
+{% endif %}
+
+
+{% comment %} CK editor JS {% endcomment %}
+<script src="{% static 'plugins/ck5/build/ckeditor.js'%}"></script>
+<script src="{% static 'plugins/ck5/build/custom_image_upload_plugin.js'%}"></script>
+<script>
+    const editorTextAreas = document.querySelectorAll('.editor');
+    editorTextAreas.forEach(textarea => {
+        ClassicEditor.create(textarea, {extraPlugins: [MyCustomUploadAdapterPlugin],}).then(editor => {
+            editor.enableReadOnlyMode("editor");
+            const toolbarElement = editor.ui.view.toolbar.element;
+            toolbarElement.style.display = 'none';}).catch(handleSampleError);
+    });
+
+    function handleSampleError(error) {
+        const issueUrl = 'https://github.com/ckeditor/ckeditor5/issues';
+
+        const message = [
+            'Oops, something went wrong!',
+            `Please, report the following error on ${issueUrl} with the build id "4v1jdg7xl05e-i6h1ic7gzkvt" and the error stack trace:`
+        ].join('\n');
+
+        console.error(message);
+        console.error(error);
+    }
+</script>
+{% endblock javascripts %}

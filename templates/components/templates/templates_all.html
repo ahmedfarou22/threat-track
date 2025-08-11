@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Templates {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+    <!-- [ Main Content ] start -->
+    <section class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <!-- [ breadcrumb ] start -->
+                    <div class="page-header">
+                        <div class="page-block">
+                            <div class="row align-items-center">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        <h5 class="m-b-10">All Templates</h5>
+                                    </div>
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a>{{app|capfirst}}</a></li>
+                                        <li class="breadcrumb-item"><a>Templates</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-12">
+
+                                    <div class="page-header-title">
+                                        {% comment %} <h5 class="m-b-10">templates</h5> good header {% endcomment %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- [ breadcrumb ] end -->
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <!-- [ Main Content ] start -->
+                            <div class="row">
+                                <!-- [ Hover-table ] start -->
+                                <div class="col-xl-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Templates</h5>
+                                            {% if 'w_templates' in USER_PERMISSIONS %}
+                                            <code> <a href="{% url 'template_add' %}" class="nav-link ">Add new template</a> </code>
+                                            {% endif %}
+                                        </div>                                    
+                                        <div class="card-block table-border-style">
+                                            <div class="table-responsive">
+                                                <form method="GET" action="">
+                                                    <div class="input-group mb-3">
+                                                        <input type="text" name="q" class="form-control" placeholder="Search templates">
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-primary" type="submit">Search</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Name</th>
+                                                            <th>About</th>
+                                                            {% if 'w_templates' in USER_PERMISSIONS %}
+                                                            <th>Actions</th>
+                                                            {% endif %}
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for template in templates %}
+                                                        <tr>
+                                                            <td><a href="/components/templates/{{template.id}}"> {{ template.name }}</a> </td>  
+                                                            <td>{{ template.about }}</td>
+                                                            
+                                                            {% if 'w_templates' in USER_PERMISSIONS %}
+                                                            <td>
+                                                                <a href="/components/templates/{{template.id}}" class="btn btn-primary">Edit</a>
+                                                                <a href="#" onclick="confirmAndSubmitForm('{{ template.id }}');" class="btn btn-danger">Delete</a>
+                                                            </td>
+                                                            <form method="post" action="{% url 'template_delete' %}" style="display: inline-block;">{% csrf_token %}
+                                                                <input type="text"  name="template_id" value="{{ template.id }}" hidden>
+                                                                <button class="btn btn-icon" type="submit" hidden id="template_delete_{{ template.id }}"></button>
+                                                            </form>
+                                                            <script>function confirmAndSubmitForm(key) {if (confirm('Are you sure you want to delete template ' + key + '?')) {    document.getElementById('template_delete_'+ key).click();}}</script>
+                                                            {% endif %}
+                                                        </tr>                                         
+                                                    {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                                
+                                                {% if templates.paginator.num_pages > 1 %}
+                                                <div class="pagination-container">
+                                                    <nav aria-label="...">
+                                                        <ul class="pagination">
+                                                            {% if templates.has_previous %}
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="First">
+                                                                    <span aria-hidden="true">&laquo;</span>
+                                                                    <span class="sr-only">First</span>
+                                                                </a>
+                                                            </li>
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page={{ templates.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Previous">
+                                                                    <span aria-hidden="true">&lsaquo;</span>
+                                                                    <span class="sr-only">Previous</span>
+                                                                </a>
+                                                            </li>
+                                                            {% endif %}
+                                                            {% for i in templates.paginator.page_range %}
+                                                            {% if templates.number == i %}
+                                                            <li class="page-item active"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span></li>
+                                                            {% elif i > templates.number|add:'-5' and i < templates.number|add:'5' %}
+                                                            <li class="page-item"><a class="page-link" href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ i }}</a></li>
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                            {% if templates.has_next %}
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page={{ templates.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Next">
+                                                                    <span aria-hidden="true">&rsaquo;</span>
+                                                                    <span class="sr-only">Next</span>
+                                                                </a>
+                                                            </li>
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page={{ templates.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Last">
+                                                                    <span aria-hidden="true">&raquo;</span>
+                                                                    <span class="sr-only">Last</span>
+                                                                </a>
+                                                            </li>
+                                                            {% endif %}
+                                                        </ul>
+                                                    </nav>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- [ Hover-table ] end -->
+
+  
+
+                            </div>
+                            <!-- [ Main Content ] end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+    <!-- [ Main Content ] end -->
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

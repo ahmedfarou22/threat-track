@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Assessment Tasks {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+
+{% block content %}
+    {% include 'includes/overview_header.html' %}
+    <div class="col-sm-12">
+        <div class="card"> <!-- Tasks list-->
+            <div class="card-header">
+                <h5>Task List</h5>
+                {% if 'w_assessment_tasks' in USER_PERMISSIONS %}
+                <code> <a href="{% url 'add_task' assessment.id %}" class="nav-link">Add new Task</a> </code>
+                {% endif %}
+            </div>
+
+            {% if tasks_to_load %}
+            <div class="card-block task-data">
+                <div class="table-hover form-material">
+                    <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
+                    
+                        <table id="simpletable" class="table dt-responsive task-list-table hover-striped table-bordered nowrap dataTable-table">
+                        
+                        <thead>
+                            <tr>
+                                <th style="width: 5.63934%;"> Task number</th>
+                                <th style="width: 30.4262%;">Task list</a></th>
+                                <th style="width: 13.8361%;">Status</th>
+                                <th style="width: 20.459%;">Assigned User</th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody class="task-page">
+                        
+                            {% for task in tasks_to_load %}
+                            <tr>
+                                {% if 'w_assessment_tasks' in USER_PERMISSIONS %}
+                                    <td><a href="{% url 'edit_task' assessment.id task.id %}">{{forloop.counter}}</a></td>
+                                {% else %}
+                                    <td>{{forloop.counter}}</td>
+                                {% endif %}
+                                <td>{{ task.task }}</td>
+                                
+                                <td>
+                                    <div class="form-group form-primary mb-0">
+                                        <form id="statusForm" method="post" action="{% url 'edit_task' assessment.id task.id %}" onchange="submitForm()">{% csrf_token %}
+                                            {% if 'w_assessment_tasks' in USER_PERMISSIONS %}
+                                            <select name="f_status" class="form-control form-control-sm">
+                                                {% for status in statuss_to_load %}
+                                                <option value="{{status.id}}" {% if task.status.name == status.name %} selected {% endif %}>{{status.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                            {% else %}
+                                            {{ task.status.name}}
+                                            {% endif %}
+                                        </form>
+                                        <span class="form-bar"></span>
+                                    </div>
+                                </td>
+                                
+                                <td>
+                                {% for assigned_user in task.assigned_to.all %}
+                                    {% if forloop.counter <= 4 %}
+                                        <a href="#!"><img class="img-fluid img-radius" {% if assigned_user.userprofile.profile_pic %}src="{{ assigned_user.userprofile.profile_pic.url }}" {% else %} src="{% static "main_profile_pic_avatar.jpg" %}" alt="profile pic" {% endif %}></a>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if 'w_assessment_tasks' in USER_PERMISSIONS %}
+                                    <a href="{% url 'edit_task' assessment.id task.id %}"><i class="fas fa-edit f-w-600 m-l-5"></i></a>
+                                {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="card-block table-border-style">
+                <p> No Tasks Created</p>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+      
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script>
+    const userDivs = document.querySelectorAll('.media');
+    userDivs.forEach(function(div) {
+        const checkbox = div.querySelector('input[type="checkbox"]');
+        div.addEventListener('click', function() {
+            checkbox.checked = !checkbox.checked;
+        });
+    });
+</script>
+<script>
+    function submitForm() {
+        document.getElementById('statusForm').submit();
+    }
+</script>
+{% endblock javascripts %}

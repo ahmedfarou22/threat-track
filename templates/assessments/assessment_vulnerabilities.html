@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Assessment Overview {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+
+{% block content %}
+    <!-- Add vulnerabilities form scan modal -->
+    <div class="modal fade" id="addVulnModal" tabindex="-1" role="dialog" aria-labelledby="addVulnModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addVulnModalLabel">Add New Vulnerabilities From Scan - {{assessment.name}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{% url 'assessment_vulnerabilities_add_from_scan' assessment_id=assessment.id %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-12 mb-4">
+                                <div class="form-group">
+                                    <label>Scan Type</label>
+                                    <select name="scan_type" class="form-control" required>
+                                        <option value="">Select Scan Type</option>
+                                        <option value="nessuss">Nessuss (CSV)</option>
+                                        <option value="openvas">OpenVAS (XML)</option>
+                                    </select> 
+                                </div>
+                            </div>
+                            <div class="col-sm-12 mb-4">
+                                <div class="form-group">
+                                    <label>Choose File</label>
+                                    <input class="form-control" type="file" name="scan_file" required>
+                                </div>
+                            </div> 
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% include 'includes/overview_header.html' %}
+    <div class="col-xl-3 col-lg-12">
+        <div class="card task-board-left">
+            <div class="card-header">
+                <h5>All Vulnerabilities</h5>
+                {% if 'w_assessment_vulnerabilities' in USER_PERMISSIONS %}
+                <code> <a href="{% url 'assessment_vulnerabilities_add' assessment_id=assessment.id%}" class="nav-link ">Add new vulnerability</a> </code>
+                {% endif %}
+            </div>
+            
+            <div class="card-block ">
+                <form id="filter-form" method="GET" action="">
+                    <div class="input-group mb-3">
+                        <select id="risk-select" name="selected_risk" class="form-control">
+                            <option value="">All risk ratings</option>
+                            <option value="Critical" {% if selected_risk == 'Critical' %}selected{% endif %}>Critical</option>
+                            <option value="High" {% if selected_risk == 'High' %}selected{% endif %}>High</option>
+                            <option value="Medium" {% if selected_risk == 'Medium' %}selected{% endif %}>Medium</option>
+                            <option value="Low" {% if selected_risk == 'Low' %}selected{% endif %}>Low</option>
+                        </select>
+                        
+                        <select id="status-select" name="selected_status" class="form-control">
+                            <option value="">All statuses</option>
+                            <option value="Unresolved" {% if selected_status == 'Unresolved' %}selected{% endif %}>Unresolved</option>
+                            <option value="Resolved" {% if selected_status == 'Resolved' %}selected{% endif %}>Resolved</option>
+                        </select>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" name="q" placeholder="Search vulnerabilities...">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary btn-icon btn-msg-send" type="submit"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="task-right">
+                    
+                    <div class="taskboard-right-progress collapse show">                        
+                        
+                        <h6 class="m-t-15">Crittical risk rating : {{total_c_risk}}</h6>
+                        <div class="progress">
+                            <div class="progress-bar progress-c-purple" role="progressbar" style="width: {{percent_c_risk}}%"></div>
+                        </div>
+
+                        <h6 class="m-t-15">High risk rating : {{total_h_risk}}</h6>
+                        <div class="progress">
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: {{percent_h_risk}}%"></div>
+                        </div>
+                        
+                        <h6 class="m-t-15">Medium risk rating : {{total_m_risk}}</h6>
+                        <div class="progress">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: {{percent_m_risk}}%"></div>
+                        </div>
+                        
+                        <h6 class="m-t-15">Low risk rating : {{total_l_risk}}</h6>
+                        <div class="progress">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: {{percent_l_risk}}%"></div>
+                        </div> 
+
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td><i class="fas fa-th-large m-r-5"></i> Total Vulnerabilities:</td>
+                                    {% if vulnerabilities_list ==  total_vulnerabilities %}
+                                    <td class="text-end"><span class="float-end"><a class="text-secondary">{{total_vulnerabilities}}</a></span></td>
+                                    {% else %}
+                                    <td class="text-end"><span class="float-end"><a class="text-secondary">{{vulnerabilities_list}}/{{total_vulnerabilities}}</a></span></td>
+                                    {% endif %}
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        {% if 'w_assessment_vulnerabilities' in USER_PERMISSIONS %}
+                        <div class="text-center">
+                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#addVulnModal">Add vulnerabilities from scans</button>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+		
+    <div class="col-xl-9 col-lg-12 filter-bar">
+        <div class="row">
+                {% for vulnerability in vulnerabilities%}
+                <div class="col-md-6 col-sm-12" >
+                    <div class="card {% if vulnerability.risk_rating == 'Critical'%}card-border-c-purple{% elif vulnerability.risk_rating == 'High'%}card-border-c-red{% elif vulnerability.risk_rating == 'Medium' %}card-border-c-yellow{% elif vulnerability.risk_rating == 'Low' %}card-border-c-blue {% else %} card-border-c-green{% endif %}">
+                        
+                        <div class="card-header" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            <a href="{% url 'assessment_vulnerability_edit' assessment.id vulnerability.id %}" class="text-secondary">{{forloop.counter}}. {{vulnerability.name}} </a>
+                        </div>
+                        
+                        <div class="card-block card-task">
+                            <div class="task-list-table">
+                                <div class="task-board"> 
+                                    {% if vulnerability.risk_rating == 'Critical' %}
+                                    <span class="label label-purple" style="float: right;"> Critical </span>
+                                    {% elif vulnerability.risk_rating == 'High' %}
+                                    <span class="label label-danger" style="float: right;"> High </span>
+            
+                                    {% elif vulnerability.risk_rating == 'Medium' %}
+                                    <span class="label label-warning" style="float: right;"> Medium </span>
+                                    
+                                    {% elif vulnerability.risk_rating == 'Low' %}
+                                    <span class="label label-info" style="float: right; "> Low </span>
+            
+                                    {% else %}
+                                    <span class="label label-success" style="float: right;"> No risk rating </span>{%endif%}
+                                </div>
+                            </div>
+
+                            {% if 'w_assessment_vulnerabilities' in USER_PERMISSIONS %}
+                            <div class="task-board">    
+                                <a href="{% url 'assessment_vulnerability_edit' assessment.id vulnerability.id %}"><button class="btn btn-primary btn-sm">Edit vulnerability </button></a>
+                                <form method="post" action="{% url 'assessment_vulnerability_delete'%}" style="display: inline-block;">{% csrf_token %}
+                                    <input type="text"  name="assessment_id" value="{{ assessment.id }}" hidden>
+                                    <input type="text"  name="vulnerability_id" value="{{vulnerability.id}}" hidden>
+                                    <button class="btn btn-danger btn-sm" type="submit" onclick="return confirm('Are you sure you want to delete the vulnerability {{ vulnerability.name }}?')">Delete </button>
+                                </form>
+                            </div>
+                            {% else %}
+                            <div class="task-board">    
+                                <a href="{% url 'assessment_vulnerability_edit' assessment.id vulnerability.id %}"><button class="btn btn-primary btn-sm">View vulnerability </button></a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+    </div>
+
+    <script>
+        const riskSelect = document.getElementById('risk-select');
+        const statusSelect = document.getElementById('status-select');
+        const filterForm = document.getElementById('filter-form');
+    
+        // add event listeners to the select elements
+        riskSelect.addEventListener('change', () => {
+            filterForm.submit(); // automatically submit the form
+        });
+    
+        statusSelect.addEventListener('change', () => {
+            filterForm.submit(); // automatically submit the form
+        });
+    </script>
+    {% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

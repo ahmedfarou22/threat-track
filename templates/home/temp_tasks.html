@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Tasks {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+{% comment %} <link rel="stylesheet" href="https://appsrv1-147a1.kxcdn.com/datta-able-pro-v100/css/plugins/main.css"> {% endcomment %}
+<link rel="stylesheet" href="{% static 'plugins/full-calendar/full-calendar.css' %}">
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="pcoded-main-container">
+    <div class="pcoded-wrapper">
+        <div class="pcoded-content">
+            <div class="pcoded-inner-content">
+                
+                <div class="col-md-12">
+                    <div class="page-header-title">
+                        <h5 class="m-b-10">Tasks</h5>
+                    </div>
+                    
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/home/dashboard"><i
+                                    class="feather icon-home"></i></a></li>
+                        <li class="breadcrumb-item"><a href="#!">Tasks</a></li>
+                    </ul>
+                </div>
+                    <div class="col-xl-12 col-md-12">
+                        <div class="card"> <!-- Tasks list-->
+                            <div class="card-header">
+                                <h5>Task List</h5>
+                                <code> <a href="" class="nav-link ">Add new Task</a> </code>
+                            </div>
+                            <div class="card-block task-data">
+                                <div class="table-hover form-material">
+                                    <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
+                                    
+                                        <table id="simpletable" class="table dt-responsive task-list-table hover-striped table-bordered nowrap dataTable-table">
+                                        
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 5.63934%;"> Task number</th>
+                                                <th style="width: 30.4262%;">Task list</a></th>
+                                                <th style="width: 20.459%;">Assessment</th>
+                                                <th style="width: 13.8361%;">Status</th>
+                                            </tr>
+                                        </thead>
+                                        
+                                        <tbody class="task-page">
+                                            <tr>
+                                                <td>1</td>
+                                                <td>Complete Nessuss scan</td>
+                                                
+                                                <td>
+                                                    Internal Pentest Assessment (Main Web Application)
+                                                </td>
+
+                                                <td>
+                                                    <div class="form-group form-primary mb-0">
+                                                        <select name="select" class="form-control form-control-sm">
+                                                            <option value="opt1" selected>Open</option>
+                                                            <option value="opt2">Resolved</option>
+                                                            <option value="opt3">Invalid</option>
+                                                            <option value="opt4">On hold</option>
+                                                            <option value="opt5" >Close</option>
+                                                        </select>
+                                                        <span class="form-bar"></span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>2</td>
+                                                <td>Create Template for CIB Client </td>
+                                                
+                                                
+                                                <td>
+                                                    Internal Pentest Assessment (Main Web Application)
+                                                </td>
+
+                                                <td>
+                                                    <div class="form-group form-primary mb-0">
+                                                        <select name="select" class="form-control form-control-sm">
+                                                            <option value="opt1">Open</option>
+                                                            <option value="opt2">Resolved</option>
+                                                            <option value="opt3">Invalid</option>
+                                                            <option value="opt4" selected>On hold </option>
+                                                            <option value="opt5">Close</option>
+                                                        </select>
+                                                        <span class="form-bar"></span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>3</td>
+                                                <td>Add proof of concept to SQL vulnerability</td>
+                                                
+                                                
+                                                <td>
+                                                    External Check of TKH
+                                                </td>
+
+                                                <td>
+                                                    <div class="form-group form-primary mb-0">
+                                                        <select name="select" class="form-control form-control-sm">
+                                                            <option value="opt1">Open</option>
+                                                            <option value="opt2">Resolved</option>
+                                                            <option value="opt3">Invalid</option>
+                                                            <option value="opt4">On hold</option>
+                                                            <option value="opt5" selected>Close</option>
+                                                        </select>
+                                                        <span class="form-bar"></span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            
+                                        </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                        </div>
+                    </div>
+                </div>
+</div>
+
+{% comment %} <script src="https://appsrv1-147a1.kxcdn.com/datta-able-pro-v100/js/plugins/main.min.js"></script> {% endcomment %}
+<script src="{% static 'plugins/full-calendar/full-calendar.js' %}"></script>
+{{ block.super }}
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            themeSystem: 'bootstrap',
+            navLinks: true,
+            droppable: false,
+            selectable: false,
+            editable: false,
+            dayMaxEvents: true,
+            handleWindowResize: true,
+            height: 600,
+            events: {% autoescape off %}{{ events|safe }}{% endautoescape %}
+        });
+        calendar.render();
+    });
+</script>
+
+{% endblock content %}
+{% block javascripts %}
+{% endblock javascripts %}

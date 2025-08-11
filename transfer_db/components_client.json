@@ -1,0 +1,13 @@
+[
+{
+  "model": "components.client",
+  "pk": 116,
+  "fields": {
+    "name": "Demo Client",
+    "phone_number": "01011122222",
+    "email": "demo@threat-track.com",
+    "logo": "",
+    "info": "This is the default demo client. You can delete this client"
+  }
+}
+]

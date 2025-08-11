@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Assessments {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+    <!-- [ Main Content ] start -->
+    <section class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <!-- [ breadcrumb ] start -->
+                    <div class="page-header">
+                        <div class="page-block">
+                            <div class="row align-items-center">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        {% comment %} <h5 class="m-b-10">assessments</h5> {% endcomment %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- [ breadcrumb ] end -->
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <!-- [ Main Content ] start -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        <h5 class="m-b-10">All Assessments</h5>
+                                    </div>
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/home"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="javascript:">{{app|capfirst}}</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-xl-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Assessments</h5>
+                                            {% if 'add_assessments' in USER_PERMISSIONS%}
+                                            <code> <a href="{% url 'assessment_add' %}" class="nav-link ">Add new Assessment</a> </code>
+                                            {%endif%}
+                                        </div>                                    
+                                        
+                                        
+                                        <div class="card-block table-border-style">
+                                            <div class="table-responsive">
+                                                
+                                                <form method="GET" action="">
+                                                    {% if request.user.userprofile.role.name != "Guest" %}
+                                                    <div class="form-row mb-2" style="margin:0;padding:0;">
+
+                                                        <div class="col-md-4 mb-2"> {% comment %} Clients {% endcomment %}
+                                                            <label for="client">Client</label>
+                                                            
+                                                            <select id="client" name="client" class="form-control" onchange="this.form.submit()"> 
+                                                                
+                                                                <option value="0">All clients</option>
+                                                                {% for client in clients%}
+                                                                <option value="{{ client.id }}" {% if selected_client == client.id %}selected{% endif %}>{{client.name }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                        
+                                                        <div class="col-md-4 mb-2"> {% comment %} Assigned User {% endcomment %}
+                                                            <label for="assigned_user">Assigned User</label> 
+                                                            <select id="selected_user" name="selected_user" class="form-control" onchange="this.form.submit()">
+                                                              <option value="">All users</option>
+                                                              {% for user in users %}
+                                                                <option value="{{ user.username }}" {% if user.username == selected_user %}selected{% endif %}>{{ user.username }}</option>
+                                                              {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                        
+                                                        <div class="col-md-4 mb-2"> {% comment %} Status {% endcomment %}
+                                                            <label for="status">Status</label> 
+                                                            <div class="input-group">
+                                                                <select id="status" name="status" class="form-control" onchange="this.form.submit()">
+                                                                    <option value="">All statuses</option>
+                                                                    {% for assessmentstatus in assessmentstatuses %}
+                                                                    <option value="{{ assessmentstatus.name }}" {% if selected_status == assessmentstatus.name %}selected{% endif %}>{{ assessmentstatus.name }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% endif %}
+
+                                                    <div class="form-row mb-2" style="margin:0;padding:0;">
+                                                        <div class="col-md-12 mb-2">
+                                                            <div class="input-group">
+                                                                <input type="text" name="q" class="form-control" placeholder="Search assessments">
+                                                                <div class="input-group-append">
+                                                                    <button class="btn btn-primary" type="submit">Search</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                                {% if assessments %}
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Assessment Name</th>
+                                                            <th>Client</th>
+                                                            <th>Assigned Users</th>
+                                                            <th>Start Date</th>
+                                                            <th>End Date</th>
+                                                            <th>Status</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {% for assessment in assessments %}
+                                                        <tr>
+                                                            <td><a href="/assessments/{{assessment.id}}/summary"> {{ assessment.name }}</a> </td>  
+                                                             <td>{{ assessment.client }}</td>
+
+                                                            
+                                                            <td> {% comment %} users in team {% endcomment %}
+                                                                {% for assigned_user in assessment.assigned_users.all|slice:":4" %}
+                                                                    {{ assigned_user.username }}{% if not forloop.last %}, {% endif %}
+                                                                {% endfor %}
+                                                                {% if assessment.assigned_users.all.count > 4 %} + {{ assessment.assigned_users.all.count|add:"-4" }} more {% endif %}
+                                                            </td>
+
+                                                            <td>{{ assessment.start_date|date:"F d, Y" }}</td>
+                                                            <td>{{ assessment.end_date|date:"F d, Y" }}</td>
+
+                                                            {% comment %} Status with color formating{% endcomment %}
+                                                            {% if assessment.status.name == "In progress"%}
+                                                            <td><a class="label theme-bg text-white f-12"> {{ assessment.status }}</a></td>
+                                                            {% else %} 
+                                                            <td><a class="label theme-bg2 text-white f-12"> {{ assessment.status }}</a></td>
+                                                            {%endif%} 
+                                                            
+                                                        </tr>                                         
+                                                    {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                                {% if assessments.paginator.num_pages > 1 %}
+                                                <div class="pagination-container">
+                                                    <nav aria-label="...">
+                                                        <ul class="pagination">
+                                                            {% if assessments.has_previous %}
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="First">
+                                                                    <span aria-hidden="true">&laquo;</span>
+                                                                    <span class="sr-only">First</span>
+                                                                </a>
+                                                            </li>
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page={{ assessments.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Previous">
+                                                                    <span aria-hidden="true">&lsaquo;</span>
+                                                                    <span class="sr-only">Previous</span>
+                                                                </a>
+                                                            </li>
+                                                            {% endif %}
+                                                            {% for i in assessments.paginator.page_range %}
+                                                            {% if assessments.number == i %}
+                                                            <li class="page-item active"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span></li>
+                                                            {% elif i > assessments.number|add:'-5' and i < assessments.number|add:'5' %}
+                                                            <li class="page-item"><a class="page-link" href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ i }}</a></li>
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                            {% if assessments.has_next %}
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page={{ assessments.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Next">
+                                                                    <span aria-hidden="true">&rsaquo;</span>
+                                                                    <span class="sr-only">Next</span>
+                                                                </a>
+                                                            </li>
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page={{ assessments.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Last">
+                                                                    <span aria-hidden="true">&raquo;</span>
+                                                                    <span class="sr-only">Last</span>
+                                                                </a>
+                                                            </li>
+                                                            {% endif %}
+                                                        </ul>
+                                                    </nav>
+                                                </div>
+                                                {% endif %}
+
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                        <div class="card-block table-border-style">
+                                            <p> No Assessments Created</p>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <!-- [ Hover-table ] end -->
+
+  
+
+                            </div>
+                            <!-- [ Main Content ] end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+    <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

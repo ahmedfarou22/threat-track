@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} All Roles {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}  
+    <!-- [ Main Content ] start -->
+    <section class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                                        <!-- [ breadcrumb ] start -->
+                                        <div class="page-header">
+                                            <div class="page-block">
+                                                <div class="row align-items-center">
+                                                    <div class="col-md-12">
+                                                        <div class="page-header-title">
+                                                            <h5 class="m-b-10">All Roles</h5>
+                                                        </div>
+                                                        <ul class="breadcrumb">
+                                                            <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                                                            <li class="breadcrumb-item"><a>Roles</a></li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <div class="page-header-title">
+                                                            <!-- <h5 class="m-b-10">users_list</h5> -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- [ breadcrumb ] end -->
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <!-- [ Main Content ] start -->
+                            <div class="row">
+                                <!-- [ Over view header ] start -->
+                                <div class="col-sm-12">
+                                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+    
+                                        <li class="nav-item">
+                                            <a class="nav-link {% if header_pill == 'users'%} active {% endif %}" href="{% url 'users_all' %}">Users</a>
+                                        </li>
+    
+                                        <li class="nav-item">
+                                            <a class="nav-link {% if header_pill == 'teams'%} active {% endif %}" href="{% url 'teams_all' %}">Teams</a>
+                                        </li>
+                                        
+                                        <li class="nav-item">
+                                            <a class="nav-link {% if header_pill == 'roles'%} active {% endif %}" href="{% url 'roles_all' %}">Roles</a>
+                                        </li>
+                                        
+                                    </ul>
+                                </div>
+                                <!-- [ Hover-table ] start -->
+                                <div class="col-xl-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Roles</h5>
+                                            <code> <a href="{% url 'role_add' %}" class="nav-link ">Add New Role</a> </code>
+                                        </div>                                    
+                                        <div class="card-block table-border-style">
+                                            <div class="table-responsive">
+                                                <form method="GET" action="">
+                                                    <div class="form-row mb-3" style="margin:0;padding:0;">
+                                                        <div class="col-md-12 mb-2">
+                                                            <div class="input-group">
+                                                                <input type="text" name="q" class="form-control" placeholder="Search roles">
+                                                                <div class="input-group-append">
+                                                                    <button class="btn btn-primary" type="submit">Search</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Role</th>
+                                                            <th>Description</th>
+                                                            <th>Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for role in roles_list %}
+                                                        <tr>
+                                                            {% comment %} <td><a href="{% url 'role_edit'  role.id %}">{{ role.name }}</a></td> {% endcomment %}
+                                                            <td><a href="{% url 'role_edit'  role.id %}" class="label bg-c-green f-12 text-white" style="background-color:{{role.color}};"> {{ role.name }}</a></td>
+                                                            
+                                                            <td> {% comment %} users in team {% endcomment %}
+                                                                {{role.description}}
+                                                            </td>
+
+                                                            <td>
+                                                                {% if role.name != "Manager" %}
+                                                                <a href="{% url 'role_edit'  role.id %}" class="btn btn-primary">Edit</a>
+                                                                <a href="#" onclick="confirmAndSubmitForm('{{ role.id }}');" class="btn btn-danger">Delete</a>
+                                                                <form method="post" action="{% url 'role_delete' %}" style="display: inline-block;">{% csrf_token %}
+                                                                    <input type="text"  name="role_id" value="{{ role.id }}" hidden>
+                                                                    <button class="btn btn-icon" type="submit" hidden id="role_delete_{{ role.id }}"></button>
+                                                                </form>
+                                                                <script>function confirmAndSubmitForm(key) {if (confirm('Are you sure you want to delete role ' + key + '?')) {    document.getElementById('role_delete_'+ key).click();}}</script>
+
+
+                                                                {% else %}
+                                                                <a href="{% url 'role_edit'  role.id %}" class="btn btn-primary">View</a>
+                                                                {% endif %}
+                                                            </td>
+                                                            
+                                                        </tr>                                         
+                                                    {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                                <div class="pagination-container">
+                                                    <nav aria-label="...">
+                                                        <ul class="pagination">
+                                                            {% if teams_list.has_previous %}
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="First">
+                                                                    <span aria-hidden="true">&laquo;</span>
+                                                                    <span class="sr-only">First</span>
+                                                                </a>
+                                                            </li>
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page={{ teams_list.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Previous">
+                                                                    <span aria-hidden="true">&lsaquo;</span>
+                                                                    <span class="sr-only">Previous</span>
+                                                                </a>
+                                                            </li>
+                                                            {% endif %}
+                                                            {% for i in teams_list.paginator.page_range %}
+                                                            {% if teams_list.number == i %}
+                                                            <li class="page-item active"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span></li>
+                                                            {% elif i > teams_list.number|add:'-5' and i < teams_list.number|add:'5' %}
+                                                            <li class="page-item"><a class="page-link" href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ i }}</a></li>
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                            {% if teams_list.has_next %}
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page={{ teams_list.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Next">
+                                                                    <span aria-hidden="true">&rsaquo;</span>
+                                                                    <span class="sr-only">Next</span>
+                                                                </a>
+                                                            </li>
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page={{ teams_list.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Last">
+                                                                    <span aria-hidden="true">&raquo;</span>
+                                                                    <span class="sr-only">Last</span>
+                                                                </a>
+                                                            </li>
+                                                            {% endif %}
+                                                        </ul>
+                                                    </nav>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+    <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

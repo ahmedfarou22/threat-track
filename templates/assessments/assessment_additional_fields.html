@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Assessment Additional Field {% endblock %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+
+{% block content %}
+{% include 'includes/overview_header.html' %}
+<div class="col-xl-12 col-lg-12">
+    {% if assessment.a_fields.items|length == 0 %}
+    <div class="card"> <!-- Assessment Name -->
+        <div class="card-header">
+            <h5 class="mb-3"><i class=" m-r-5"></i>No Additional Fields Added</h5>
+        </div>
+
+        <div class="card-block">
+            <div class="m-b-20">
+                <p> To add additional fields go to <b>assessment summary,edit assessment, then choose an assessment
+                        structure</b></p>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    {% for key, value in assessment.a_fields.items %}
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-3"><i class=" m-r-5"></i>{{ key }}</h5>
+            {% if 'w_assessment_additional_fields' in USER_PERMISSIONS %}
+            <code>
+                <a href="/assessments/{{assessment.id}}/assessment_field_edit/a/{{key}}"><i class="fas fa-edit text-info" title="Edit {{key}}" ></i></a>
+                <a href="/assessments/{{assessment.id}}/assessment_field_render_shortcodes_key/a/{{key}}"><i class="fas fa-registered text-info" title="Render Shortcodes in {{key}}"></i></a>
+                <a href="#" onclick="confirmAndSubmitForm('{{ key }}');"><i class="fas fa-trash-alt text-info" title="Delete {{key}}"></i></a>
+                <form method="post" action="/assessments/assessment_field_delete" style="display: inline-block;">{% csrf_token %}
+                    <input type="text"  name="id" value="{{ assessment.id }}" hidden>
+                    <input type="text"  name="for" value="a" hidden>
+                    <input type="text"  name="key" value="{{ key }}" hidden>
+                    <button class="btn btn-icon" type="submit" hidden id="assessment_field_delete_{{key}}"></button>
+                </form>
+                <script>function confirmAndSubmitForm(key) {if (confirm('Are you sure you want to delete field ' + key + '?')) {    document.getElementById('assessment_field_delete_' + key).click();}}</script>
+            </code>
+            {% endif %}
+        </div>
+        <div class="card-block">
+            <div class="m-b-20">
+                <textarea class="editor form-control" name="{{key}}" rows='4'>{{value}}</textarea>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+
+
+{% comment %} CK editor JS {% endcomment %}
+<script src="{% static 'plugins/ck5/build/ckeditor.js'%}"></script>
+<script src="{% static 'plugins/ck5/build/custom_image_upload_plugin.js'%}"></script>
+
+<script>
+    const editorTextAreas = document.querySelectorAll('.editor');
+    editorTextAreas.forEach(textarea => {
+        ClassicEditor.create(textarea, { extraPlugins: [MyCustomUploadAdapterPlugin], }).then(editor => {
+            editor.enableReadOnlyMode("editor");
+            const toolbarElement = editor.ui.view.toolbar.element;
+            toolbarElement.style.display = 'none';
+        }).catch(handleSampleError);
+    });
+
+    function handleSampleError(error) {
+        const issueUrl = 'https://github.com/ckeditor/ckeditor5/issues';
+
+        const message = [
+            'Oops, something went wrong!',
+            `Please, report the following error on ${issueUrl} with the build id "4v1jdg7xl05e-i6h1ic7gzkvt" and the error stack trace:`
+        ].join('\n');
+
+        console.error(message);
+        console.error(error);
+    }
+</script>
+{% comment %} END of CK editor JS {% endcomment %}
+
+{% endblock javascripts %}

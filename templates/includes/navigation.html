@@ -1,0 +1,64 @@
+{% load static %}
+<!-- [ Header ] start -->
+<header class="navbar pcoded-header navbar-expand-lg navbar-light">
+    <div class="m-header">
+        <a class="mobile-menu" id="mobile-collapse1" href="javascript:"><span></span></a>
+        <a href="/" class="b-brand">
+            <span class="b-title">Threat Track</span>
+        </a>
+    </div>
+        
+    <ul class="navbar-nav ml-auto" id="mobile-nav">
+        <li>
+            <div class="dropdown drp-user">
+                <a href="javascript:" class="dropdown-toggle" data-toggle="dropdown">
+                    <i class="icon feather icon-settings"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right profile-notification">
+                    <div class="pro-head">
+                        {% if user.userprofile.profile_pic %}
+                        <img src="{{user.userprofile.profile_pic.url}}" class="img-radius" alt="User-Profile-Image">
+                        {% else %}
+                        <img src="{% static "main_profile_pic_avatar.jpg" %}" class="img-radius" alt="User-Profile-Image">
+                        {%endif%}
+                        <span>
+                            {{ request.user.username }}    
+                        </span>
+                        <a href="{% url 'logout_user' %}" class="dud-logout" title="Logout">
+                            <i class="feather icon-log-out"></i>
+                        </a>
+                    </div>
+                    <ul class="pro-body">
+                        <li><a href="/users/profile" class="dropdown-item"><i class="feather icon-user"></i>
+                            Profile</a></li>
+                        <li><a href="{% url 'logout_user' %}" class="dropdown-item"> 
+                            <i class="feather icon-lock"></i> Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+    </ul>
+
+    {% if messages %}
+    {% for message in messages %}
+        {% if message.tags == 'error' %}
+            <div class="alert alert-s alert-danger fade show" role="alert">
+                {{ message }}
+            </div>
+        {% else %}
+            <div class="alert alert-s alert-{{ message.tags }} fade show" role="alert">
+                {{ message }}
+            </div>
+        {% endif %}
+    {% endfor %}
+    {% endif %}
+    </div>
+    <script>
+        // Check the screen width and apply the style for mobile
+        if (window.innerWidth <= 768) { // Adjust the breakpoint as needed
+            document.getElementById('mobile-nav').style.display = 'none';
+        }
+    </script>
+</header>
+<!-- [ Header ] end -->

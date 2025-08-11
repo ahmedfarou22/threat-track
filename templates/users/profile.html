@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %} Profile {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <!-- [ Main Content ] start -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        <h5 class="m-b-10">Profile</h5>
+                                    </div>
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/home"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="">Profile</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-sm-8">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Edit Info</h5>
+                                        </div>
+                                    <form role="form" method="post" action="" enctype="multipart/form-data" id="validateForm">
+                                        {% csrf_token %}
+                                        <div class="card-block">
+                                            <div class="row">
+                                                
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label>First name</label>
+                                                        <input class="form-control" type="text" name="first_name" readonly value="{{user.first_name}}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label>Last name</label>
+                                                        <input class="form-control" type="text" name="last_name" readonly value="{{user.last_name}}">  
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="add">Role</label>
+                                                            <input class="form-control" readonly value="{{ request.user.userprofile.role.name }}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="add">Email</label>
+                                                        <input class="form-control" type="email" name="email" readonly value="{{user.email}}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="add">Username</label>
+                                                        <input type="text" name="username" readonly value="{{user.username}}" class="form-control" >
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="add">Update profile picture</label>
+                                                        <input type="file" name="profile_picture" class="form-control validate-file-image">
+                                                        <span class="validation-message" id="profile_picture-validation-message"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="add">Update phone number</label>
+                                                        <input type="phone" name="phone_number" value="{{user.userprofile.phone_number}}" class="form-control validate-required validate-phone" >
+                                                        <span class="validation-message" id="phone_number-validation-message"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12 mb-2">
+                                                    <div class="form-group">
+                                                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back</a>
+                                                        <button type="submit" class="btn btn-primary">Update</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="card">
+                                        <div class="card-block">
+                                            <div class="d-flex align-items-center justify-content-center flex-column">
+                                                <div class="w-50 p-3">
+                                                    {% if user.userprofile.profile_pic%}
+                                                    <img src="{{request.user.userprofile.profile_pic.url}}" alt="profile image" class="img-fluid rounded-circle">
+                                                    {% else %}
+                                                    <p>No profile picture uploaded</p>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="text-center">
+                                                    <h4 class="font-weight-bold h6">
+                                                        {{ request.user.username }}
+                                                    </h4>
+                                                    <p class="font-italic text-muted">
+                                                        {% if request.user.email %} {{ request.user.email }} {% endif %}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div class="small font-weight-light mt-4 text-center text-muted">
+                                                <p>
+                                                    <a href="{% url "user_changepass" %}" class="nav-link ">Change Password</a>
+                                                </p>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- [ Main Content ] end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <!-- [ Main Content ] end -->
+    
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+{% endblock javascripts %}

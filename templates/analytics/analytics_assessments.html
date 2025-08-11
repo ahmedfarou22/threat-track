@@ -1,0 +1,420 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Analytics {% endblock %} 
+
+{% block stylesheets %} {% endblock stylesheets %}
+{% block content %}
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container" >
+        <div class="pcoded-wrapper" >
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <!-- [ breadcrumb ] start -->
+                    <div class="page-header">
+                        <div class="page-block">
+                            <div class="row align-items-center">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        <h5 class="m-b-10">Analytics</h5>
+                                    </div>
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/dashboard"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{% url 'analytics_assessments' %}">Assessment Analytics</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- [ breadcrumb ] end -->
+
+                    <div class="main-body" >
+                        <div class="page-wrapper">
+                            <div class="row">
+                              {% comment %} Analytics Section {% endcomment %}
+                                <div class="col-xl-9">
+                                    <div class="row">
+
+                                        <div class="col-sm-12"> <!-- Total Assessments -->
+                                            <div class="card card-event"> 
+                                                <div class="card-header">
+                                                    <div class="row align-items-center justify-content-center">
+                                                        <div class="col">
+                                                            <h6 class="m-0 d-inline mr-5">Total Assessments: {{ total_filtered_assessments_to_show }} / {{ assessments_all }}</h6>
+                                                            <h6 class="m-0 d-inline mr-5">Total Vulnerabilities: {{ total_filtered_vulnerabilities_to_show }} / {{ Vulnerabilities_all }}</h6>
+                                                            <h6 class="m-0 d-inline mr-5">|</h6>
+                                                            <h6 class="m-0 d-inline mr-5"> From: {{ first_creation_time_to_show|date:'F j, Y' }}</h6>
+                                                            <h6 class="m-0 d-inline mr-5"> To: {{ latest_end_date_to_show|date:'F j, Y' }}</h6>
+                                                            <div class="progress mt-2">
+                                                                <div class="progress-bar progress-c-theme" role="progressbar" style="width:{{precent_for_bar}}%;height:11px;"></div>
+                                                            </div>
+                                                        </div>
+                                                      </div>
+                                                      
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-6"> <!-- Assessments Statuses -->
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h5>Assessments - statuses</h5>
+                                                </div>
+                                                <div class="card-block">
+                                                    <div id="morris-donut-chart" style="height:240px"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-6"> <!-- Vulnerabilities Risk Rating -->
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h5>Vulnerabilities - risk rating</h5>
+                                                </div>
+                                                <div class="card-block">
+                                                    <div id="morris-donut-chart-Vulnerabilities-Risk-Rating" style="height:240px"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {% comment %} <div class="col-sm-12">  <!-- Assessments Priorities -->
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h5>Assessments - priorities</h5>
+                                                </div>
+                                                <div class="card-block">
+                                                    <div id="morris-bar-stacked-chart" style="height:200px"></div>
+                                                </div>
+                                            </div>
+                                        </div> {% endcomment %}
+                                        
+                                        <div class="col-sm-4"> <!-- Assessments Clients -->
+                                            <div class="card">
+                                                <div class="card-header"> <h5>Assessments - clients</h5> </div>
+                                                <div class="card-block assign-user">
+                                                    {% for client in client_to_show %}
+                                                        {% if forloop.counter0|divisibleby:2 %}
+                                                            <div class="row">
+                                                        {% endif %}
+                                                        <div class="col-md-6">
+                                                            <div class="media">
+                                                                <div class="media-left media-middle me-3">
+                                                                    {% if client.logo %}
+                                                                        <img src="{{ client.logo.url }}" alt="chat-user">
+                                                                    {% else %}
+                                                                        <img src="{% static "main_profile_pic_avatar.jpg" %}" alt="chat-user">
+                                                                    {% endif %}
+                                                                </div>
+                                                                <div class="media-body" style="padding-inline: 10px 20px;">
+                                                                    <h6>{{ client.name }}</h6>
+                                                                    <br><br>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {% if forloop.counter|divisibleby:2 or forloop.last %}
+                                                            </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-4"> <!-- Assighned Users -->
+                                            <div class="card">
+                                                <div class="card-header"> <h5> Assessments - assighned users</h5> </div>
+                                                <div class="card-block assign-user">
+                                                    {% for user in assigned_users_to_show %}
+                                                        
+                                                        {% if forloop.counter0|divisibleby:2 %}
+                                                            <div class="row">
+                                                        {% endif %}
+                                                        {% if user.userprofile.role.name != "Guest"%}
+                                                            <div class="col-md-6">
+                                                                <div class="media">
+                                                                    <div class="media-left media-middle me-3">
+                                                                        {% if user.userprofile.profile_pic %}
+                                                                            <img class="img-radius" src="{{ user.userprofile.profile_pic.url }}" alt="chat-user">
+                                                                        {% else %}
+                                                                            <img class="img-radius" src="{% static "main_profile_pic_avatar.jpg" %}" alt="chat-user">
+                                                                        {% endif %}
+                                                                    </div>
+                                                                    <div class="media-body" style="padding-inline: 10px 20px;">
+                                                                        <h6>{{ user.first_name }} {{ user.last_name }}</h6>
+                                                                        <p>{{ user.userprofile.role.name }}</p>
+                                                                        <br>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        {% endif %}
+                                                        {% if forloop.counter|divisibleby:2 or forloop.last %}
+                                                            </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-4"> <!-- Created By -->
+                                            <div class="card">
+                                                <div class="card-header"> <h5> Assessments - created by</h5> </div>
+                                                <div class="card-block assign-user">
+                                                    {% for user in created_by_to_show %}
+                                                        
+                                                        {% if forloop.counter0|divisibleby:2 %}
+                                                            <div class="row">
+                                                        {% endif %}
+                                                        <div class="col-md-6">
+                                                            <div class="media">
+                                                                <div class="media-left media-middle me-3">
+                                                                    {% if user.userprofile.profile_pic %}
+                                                                        <img class="img-radius" src="{{ user.userprofile.profile_pic.url }}" alt="chat-user">
+                                                                    {% else %}
+                                                                        <img class="img-radius" src="{% static "main_profile_pic_avatar.jpg" %}" alt="chat-user">
+                                                                    {% endif %}
+                                                                </div>
+                                                                <div class="media-body" style="padding-inline: 10px 20px;">
+                                                                    <h6>{{ user.first_name }} {{ user.last_name }}</h6>
+                                                                    <p>{{ user.userprofile.role.name }}</p>
+                                                                    <br>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {% if forloop.counter|divisibleby:2 or forloop.last %}
+                                                            </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+                                    </div>
+                                </div>
+                
+                                {% comment %} Filtering Section {% endcomment %}
+                                <div class="col-xl-3 col-lg-12 task-detail-right">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Filter Assessments</h5>
+                                        </div>
+                                        <div class="card-block">
+                                            <table class="table">
+                                                <tbody>
+                                                <form method="GET">
+                                                    <tr> <!-- Clients -->
+                                                        <td><i class="fas fa-adjust m-r-5"></i> Clients</td>
+                                                        <td class="text-end">
+                                                            <label onclick="toggleDropdown('select-clients')">Click here to view clients</label> 
+                                                    
+                                                            <div id="select-clients" style="display: none;"> 
+                                                                <select class="form-control" name="selected_clients" id="clients" multiple size="15">
+                                                                    {% comment %} <option value="0" {% if client in selected_clients %}selected{% endif %}>All clients</option> {% endcomment %}
+                                                                    {% for client in clients_all %}
+                                                                        <option value="{{ client.id }}" {% if client.id in selected_clients %}selected{% endif %}>{{ client.name }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+                                                        </td>
+                                                    </tr>  
+                                                    
+                                                    <tr> <!-- From -->
+                                                        <td><i class="far fa-calendar-alt m-r-5"></i>From</td>
+                                                        
+                                                        <td class="text-end"><input type="date" class="form-control" name='selected_from_date' value="{{selected_from_date}}"></td>
+                                                    </tr>
+                                                    
+                                                    <tr><!-- To -->
+                                                        <td><i class="far fa-calendar-alt m-r-5"></i>To</td>
+                                                        <td class="text-end"><input type="date" class="form-control" name='selected_to_date' value="{{selected_to_date}}"></td>
+                                                    </tr>
+
+                                                    <tr> <!-- Status -->
+                                                        <td><i class="fas fa-thermometer-half m-r-5"></i> Status</td>
+                                                        <td class="text-end">
+                                                            <select name="selected_status" class="form-control"> 
+                                                                <option value="">Select status</option>
+                                                                {% for status in assessment_statuses_all%}
+                                                                <option value="{{ status.name }}" {% if status.name == selected_status %}selected {%endif%}>{{status.name }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+
+                                                    {% comment %} <tr> <!-- Priority -->
+                                                        <td><i class="fas fa-chart-line m-r-5"></i> Priority</td>
+                                                        <td class="text-end">
+                                                            <select name="selected_priority" class="form-control"> 
+                                                                <option value="">Select priority</option>
+                                                                {% for priority in assessment_priorities_all%}
+                                                                <option value="{{ priority.name }}" {% if priority.name == selected_priority %}selected {%endif%}>{{priority.name }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </td>
+                                                    </tr> {% endcomment %}
+
+                                                    <tr> <!-- Risk Rating -->
+                                                        <td><i class="fas fa-chart-pie m-r-5"></i>Risk Rating</td>
+                                                        <td class="text-end">
+                                                            <select name="selected_risk_rating" class="form-control"> 
+                                                                <option value="0">Select Risk Rating</option>
+                                                                <option value="Critical" {% if selected_risk_rating == 'Critical' %} selected {% endif %} > Critical</option>
+                                                                <option value="High"     {% if selected_risk_rating == 'High' %}     selected {% endif %} > High</option>
+                                                                <option value="Medium"   {% if selected_risk_rating == 'Medium' %}   selected {% endif %} > Medium</option>
+                                                                <option value="Low"      {% if selected_risk_rating == 'Low' %}      selected {% endif %} > Low</option>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                    
+                                                    <tr> <!-- Created by -->
+                                                        <td><i class="fas fa-user m-r-5"></i>Created by</td>
+                                                        <td class="text-end">
+                                                            <label onclick="toggleDropdown('select-created_by')">Click here to view users</label> 
+                                                    
+                                                            <div id="select-created_by" style="display: none;"> 
+                                                                <select class="form-control" name="selected_created_by" multiple size="5">
+                                                                    {% comment %} <option value="0" {% if user.id in selected_created_by %}selected{% endif %}>All Users</option> {% endcomment %}
+                                                                    {% for user in users_all %}
+                                                                        <option value="{{ user.id }}" {% if user.id in selected_created_by %}selected{% endif %}>{{ user.first_name }} {{user.last_name}}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    
+                                                    <tr> <!-- Assighned -->
+                                                        <td><i class="fas fa-users m-r-5"></i>Assighned</td>
+                                                        <td class="text-end">
+                                                            <label onclick="toggleDropdown('select-assigned_to')">Click here to view users</label> 
+                                                    
+                                                            <div id="select-assigned_to" style="display: none;"> 
+                                                                <select class="form-control" name="selected_assigned_to" multiple size="5">
+                                                                    {% comment %} <option value="0" {% if user in selected_users %}selected{% endif %}>All Users</option> {% endcomment %}
+                                                                    {% for user in users_all %}
+                                                                    {% if user.userprofile.role.name != "Guest"%}
+                                                                        <option value="{{ user.id }}" {% if user.id in selected_assigned_to %}selected{% endif %}>{{ user.first_name }} {{user.last_name}}</option>
+                                                                    {% endif %}
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+
+                                                </tbody>
+                                            </table>
+                                            <div class="text-center inline">
+                                                <button class="btn btn-primary" type="submit">Apply filters</button>
+                                            </form>
+                                                <a href="{% url 'analytics_assessments' %}"> <button class="btn btn-secondary">Reset filters</button><a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <!-- [ Main Content ] end -->
+
+    <script>
+        function toggleDropdown(dropdownId) {
+          var dropdown = document.getElementById(dropdownId);
+          if (dropdown.style.display === "none") {
+            dropdown.style.display = "block";
+          } else {
+            dropdown.style.display = "none";
+          }
+        }
+        </script>
+        
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <!-- chart-morris Js -->
+    <script src="{% static 'plugins/chart-morris/js/raphael.min.js' %}"></script>
+    <script src="{% static 'plugins/chart-morris/js/morris.min.js' %}"></script>
+
+    <script type="text/javascript">
+        'use strict';
+        $(document).ready(function() {
+            setTimeout(function() {
+                var assessmentStatusesData = JSON.parse('{{ assessment_statuses_graph_to_show | escapejs }}');
+                var data = [];
+        
+                for (var i = 0; i < assessmentStatusesData.length; i++) {
+                    data.push({
+                        label: assessmentStatusesData[i].label,
+                        value: assessmentStatusesData[i].value
+                    });
+                }
+                
+                var graph = Morris.Donut({
+                    element: 'morris-donut-chart',
+                    data: data,
+                    colors: [
+                        '#1de9b6',
+                        '#A389D4',
+                        '#04a9f5',
+                        '#1dc4e9',
+                    ],
+                    resize: true,
+                    formatter: function(x) {
+                        return "val : " + x
+                    }
+                });
+
+                var vulnerabilityRiskRatingData = JSON.parse('{{ vulnerability_risk_rating_graph_to_show | escapejs }}');
+                var vulnerability_color_mapping = {
+                    'Critical': '#A389D4', // Purple
+                    'High': '#DC3545',     // Red
+                    'Medium': '#FFC107',   // Yellow
+                    'Low': '#04A9F5'       // Blue
+                }
+                
+                var data2 = [];
+                for (var i = 0; i < vulnerabilityRiskRatingData.length; i++) {
+                    var risk_rating = vulnerabilityRiskRatingData[i].label;
+                    var count = vulnerabilityRiskRatingData[i].value;
+                    var color = vulnerability_color_mapping[risk_rating];
+                    data2.push({
+                        label: risk_rating,
+                        value: count,
+                        color: color
+                    });
+                }
+                
+                var graph = Morris.Donut({
+                    element: 'morris-donut-chart-Vulnerabilities-Risk-Rating',
+                    data: data2,
+                    resize: true,
+                    formatter: function(x) {
+                        return "val : " + x
+                    }
+                });
+                
+                Morris.Bar({
+                    element: 'morris-bar-stacked-chart',
+                    data: {{ assessment_priorities_graph_to_show | safe }},
+                    xkey: 'y',
+                    ykeys: ['a'],
+                    labels: ['Assessments'],
+                    barColors: ["#A389D4"],
+                    hideHover: true,
+                    barSizeRatio: 0.50,
+                    barGap: 3,
+                    resize: true,
+                    responsive:true,
+                    
+                });
+
+            },700);
+        });
+    </script>
+    
+{% endblock javascripts %}
+

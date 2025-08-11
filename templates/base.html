@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>
+        Threat Track - {% block title %}{% endblock %}
+    </title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="description" content="Threat-Track: A Collaboration and Reporting Platform for Streamlining and Managing Pentest Assessments" />
+    <meta name="author" content="Threat-Track Team"/>
+
+    <!-- Favicon icon -->
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    <!-- fontawesome icon -->
+    <link rel="stylesheet" href="{% static 'fonts/fontawesome/css/fontawesome-all.min.css' %}">
+    <!-- animation css -->
+    <link rel="stylesheet" href="{% static 'plugins/animation/css/animate.min.css' %}">
+    <!-- vendor css -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <!-- dark mode css -->
+    <link rel="stylesheet" href="{% static 'css/dark.css' %}">
+
+    <!-- Specific CSS goes HERE -->
+    {% block stylesheets %}{% endblock stylesheets %}
+
+</head>
+<body>
+
+    <!-- [ Pre-loader ] start -->
+    <div class="loader-bg">
+        <div class="loader-track">
+            <div class="loader-fill"></div>
+        </div>
+    </div>
+    <!-- [ Pre-loader ] End -->
+
+    {% include 'includes/sidebar.html' %}
+    {% include 'includes/navigation.html' %}
+
+    {% block content %}{% endblock content %}
+
+    <!-- Specific Page JS goes HERE  -->
+    {% include 'includes/scripts.html' %}
+    <!-- jQuery library -->
+    {% comment %} <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> {% endcomment %}
+
+    {% block javascripts %}{% endblock javascripts %}
+    
+    
+
+</body>
+</html>

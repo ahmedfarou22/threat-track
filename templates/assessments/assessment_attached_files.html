@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Assessment Overview {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+
+{% block content %}
+    {% include 'includes/overview_header.html' %}
+    {% if 'w_assessment_attached_files'  in USER_PERMISSIONS %}
+        <div class="col-xl-8 col-lg-12">
+    {% else %}
+    <div class="col-xl-12 col-lg-12">
+    {% endif %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-3"><i class=" m-r-5"></i>Attached Files</h5>
+                </div>
+                <div class="card-block">
+                    <ul class="media-list p-0">
+                        {%if assessment.files.all%}
+                            {% for file in assessment.files.all %}  
+                            <li class="media d-flex m-b-15">
+                                <div class="m-r-20 file-attach">
+                                    <i class="far fa-file-alt f-28 text-muted"></i>
+                                </div>
+                                
+                                <div class="media-body">
+                                    <a href="{% url "download_file" assessment.id file.id %}" target="_blank" class="m-b-5 d-block text-secondary">{{file.name}}</a>
+                                    <div class="text-muted">
+                                        <span>
+                                            Added by <a class="text-secondary">{{file.added_by}}</a>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="float-end text-muted" style="padding:5px">
+                                    <a href="{% url "download_file" assessment.id file.id %}" target="_blank" class="me-3"><i class="fas fa-download f-18 text-secondary"></i></a>
+                                </div> 
+
+                                {% if 'w_assessment_attached_files' in USER_PERMISSIONS %}
+                                <div class="float-end" style="padding: 5px;">
+                                    <a href="#" onclick="confirmAndSubmitForm('{{ file.id }}');">
+                                    <i class="fas fa-trash-alt f-18 text-danger"></i>
+                                    </a>
+
+                                    <form method="post" action="/assessments/deletefile" style="display: inline-block;">{% csrf_token %}
+                                        <input type="text"  name="assessment_id" value="{{ assessment.id }}" hidden>
+                                        <input type="text"  name="file_id" value="{{ file.id }}" hidden>
+                                        <button class="btn btn-icon" type="submit" hidden id="assessment_delete_file_{{ file.id }}"></button>
+                                    </form>
+                                    <script>function confirmAndSubmitForm(key) {if (confirm('Are you sure you want to delete: ' + key + '?')) {    document.getElementById('assessment_delete_file_' + key).click();}}</script>
+
+                                </div>
+                                {%endif%}
+
+                            {% endfor %}
+                        
+                        {% else %}
+                            <P>No files attached to this assessment</p>
+                        {% endif %}
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% if 'w_assessment_attached_files' in USER_PERMISSIONS %}
+        <div class="col-xl-4 col-lg-12 task-detail-right">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Attach New File</h5>
+                </div>
+                <div class="card-block">
+                    <form method="post" enctype="multipart/form-data" id="validateForm">{% csrf_token %}
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="file" name="file" class="form-control validate-required validate-file-size-20" id="file-input">
+                                <button type="submit" class="btn btn-primary">Upload</button>
+                            </div>
+                            <span class="validation-message" id="file-validation-message"></span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+{% endblock content %}
+{% block javascripts %}
+{% endblock javascripts %}

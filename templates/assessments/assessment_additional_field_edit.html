@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Assessment Additional Field Edit{% endblock %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+
+{% block content %}
+<div class="pcoded-main-container">
+    <div class="pcoded-wrapper">
+        <div class="pcoded-content">
+            <div class="pcoded-inner-content">
+                <div class="main-body">
+                    <div class="page-wrapper">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h5 class="mt-4"> Edit Assessment - {{assessment.name}} </h5>
+                                <hr>
+                            </div>
+
+                            <!-- <div id="loading-spinner" class="d-flex justify-content-center"></div> -->
+                            <!-- <script> document.addEventListener("DOMContentLoaded", function () {document.getElementById('loading-spinner').style.display = 'flex';document.getElementById('page-content').style.display = 'none';setTimeout(function () {document.getElementById('loading-spinner').style.display = 'none';document.getElementById('page-content').style.display = 'block';}, 100);});</script> -->
+                            <div class="col-xl-12 col-lg-12">
+
+                                {% if f_for == 's' %}
+                                {% for key, value in assessment.s_fields.items %}
+                                {% if key == key_to_edit %}
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-3"><i class=" m-r-5"></i>Edit filed - {{ key }}</h5>
+                                    </div>
+                                    <div class="card-block">
+                                        <form method="post" id="af-form" data-changed="false">{% csrf_token %}
+                                            <div class="m-b-20">
+                                                <textarea class="editor form-control" name="{{key}}"
+                                                    rows='4'>{{value}}</textarea>
+                                            </div>
+
+                                            <div class="m-b-20">
+                                                <button type="submit" class="btn btn-primary"><i
+                                                        class="fas fa-save"></i>Save</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                                {% endif %}
+
+                                {% if f_for == 'a' %}
+                                {% for key, value in assessment.a_fields.items %}
+                                {% if key == key_to_edit %}
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-3"><i class=" m-r-5"></i>Edit filed - {{ key }}</h5>
+                                    </div>
+                                    <div class="card-block">
+                                        <form method="post" id="af-form" data-changed="false">{% csrf_token %}
+                                            <div class="m-b-20">
+                                                <textarea class="editor form-control" name="{{key}}"
+                                                    rows='4'>{{value}}</textarea>
+                                            </div>
+
+                                            <div class="m-b-20">
+                                                <button type="submit" class="btn btn-primary"><i
+                                                        class="fas fa-save"></i>Save</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+
+{% comment %} CK editor JS {% endcomment %}
+<script src="{% static 'plugins/ck5/build/ckeditor.js'%}"></script>
+<script src="{% static 'plugins/ck5/build/custom_image_upload_plugin.js'%}"></script>
+
+<script>
+    const csrfmiddlewaretoken = '{{ csrf_token }}'
+    const for_model = 'Assessment';
+    const model_id = '{{ assessment.id }}';
+
+    ClassicEditor.create(document.querySelector('.editor'), { extraPlugins: [MyCustomUploadAdapterPlugin], }).then(editor => { window.editor = editor; }).catch(handleSampleError);
+    function handleSampleError(error) {
+        const issueUrl = 'https://github.com/ckeditor/ckeditor5/issues';
+
+        const message = [
+            'Oops, something went wrong!',
+            `Please, report the following error on ${issueUrl} with the build id "4v1jdg7xl05e-i6h1ic7gzkvt" and the error stack trace:`
+        ].join('\n');
+
+        console.error(message);
+        console.error(error);
+    }
+</script>
+{% comment %} END of CK editor JS {% endcomment %}
+
+{% endblock javascripts %}

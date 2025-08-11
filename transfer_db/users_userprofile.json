@@ -1,0 +1,12 @@
+[
+{
+  "model": "users.userprofile",
+  "pk": 60,
+  "fields": {
+    "user": 62,
+    "phone_number": "01011112222",
+    "role": 5,
+    "profile_pic": ""
+  }
+}
+]

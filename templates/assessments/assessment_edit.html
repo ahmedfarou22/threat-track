@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Assessment Summary {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+
+{% block content %}
+{% include 'includes/overview_header.html' %}      
+    <div class="col-xl-4 col-lg-12 task-detail-left">
+        <form method="post" id="validateForm">{% csrf_token %}
+        <div class="card">
+            <div class="card-header">
+                <h5>Select Assessment Details</h5>
+            </div>
+            <div class="card-block">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td><i class="fas fa-adjust m-r-5"></i> Client</td>
+                            <td class="text-end">
+                                <select name="client" class="form-control validate-required" id="client"> 
+                                    <option value="0">Select client</option>
+                                    {% for client in clients%}
+                                    <option value="{{ client.id }}" {% if assessment.client.name == client.name %}selected {%endif%}>{{client.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <span class="validation-message" id="client-validation-message"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-sitemap m-r-5"></i> Assessment Structure</td>
+                            <td class="text-end">
+                                <select name="assessment_structure_id" class="form-control" > 
+                                    <option value="0">No assessment structure</option>
+                                    {% for assessment_structure in assessment_structures%}
+                                    <option value="{{ assessment_structure.id }}" {% if assessment_structure.name == assessment.af_name %}selected {%endif%}>{{assessment_structure.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <span class="validation-message" id="assessment_structure_id-validation-message"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-thermometer-half m-r-5"></i> Status</td>
+                            <td class="text-end">
+                                <select name="status_id" class="form-control validate-required" > 
+                                    <option value="0">Select status</option>
+                                    {% for status in statuses%}
+                                    <option value="{{ status.id }}" {% if assessment.status.name == status.name %}selected {%endif%}>{{status.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <span class="validation-message" id="status_id-validation-message"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><i class="far fa-calendar-alt m-r-5"></i>Start date</td>
+                            <td class="text-end">
+                                <input type="date" class="form-control validate-required" name="start_date" value="{{assessment.start_date|date:'Y-m-d'}}" id="start_date_custom" >
+                                <span class="validation-message" id="start_date-validation-message"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><i class="far fa-calendar-alt m-r-5"></i>End date</td>
+                            <td class="text-end">
+                                <input type="date" class="form-control validate-required" name="end_date" value="{{assessment.end_date|date:'Y-m-d'}}" id="end_date_custom">
+                                <span class="validation-message" id="end_date-validation-message"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br>
+                <div class="m-b-20 text-center">
+                    <a href="/assessments/{{assessment.id}}/summary" class="btn btn-secondary">Back</a>
+                    <button type="submit" class="btn btn-primary">Update Assessment</button>
+                </div>  
+            </div>
+        </div>
+
+
+    </div>
+    
+    <div class="col-xl-8 col-lg-12">
+        <div class="card"> <!-- Assessment Name -->
+            <div class="card-header">
+                <h5 class="mb-3"><i class=" m-r-5"></i>Edit Assessment Name</h5>
+            </div>
+            <div class="card-block">
+                <div class="m-b-20">
+                    <input class="form-control validate-required" type="text" name="name" value="{{assessment.name}}">
+                    <span class="validation-message" id="name-validation-message"></span>
+                </div>
+            </div>
+        </div>
+        <div class="card"> <!-- Assign Users -->
+            <div class="card-header">
+                <h5>Assign Users</h5>
+            </div>
+            <div class="card-block user-box assign-user">
+                <div class="form-group">
+                    <div class="input-group">
+                        <select name="teams_to_load" class="form-control" id="teams_to_load">
+                            <option value="0">Select users from a team </option>
+                            {% for team in teams %}
+                            <option value="{{ team.id }}">{{ team.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <hr>
+                {% for user in users %}
+                {% if forloop.counter0|divisibleby:3 %}
+                    <div class="row">
+                {% endif %}
+                <div class="col-md-4">
+                    <div class="media">
+                        <div class="media-left media-middle me-3">
+                            {% if user.userprofile.profile_pic %}
+                                <img class="img-radius" src="{{ user.userprofile.profile_pic.url }}" alt="chat-user">
+                            {% else %}
+                                <img class="img-radius" src="{% static "main_profile_pic_avatar.jpg" %}" alt="chat-user">
+                            {% endif %}
+                        </div>
+                        <div class="media-body" style="padding-inline: 10px 20px;">
+                            <h6>{{ user.first_name }} {{ user.last_name }}</h6>
+                            <p>{{ user.username }}</p>
+                            <br>
+                        </div>
+                        <div class="checkbox checkbox-primary d-inline">
+                            <input type="checkbox" name="assigned_users" class="validate-required" id="assigned_users_{{ user.id }}" value="{{ user.id }}" {% if user in assessment.assigned_users.all %}checked{% endif %}>
+                            <label for="assigned_users_{{ user.id }}" class="cr"></label>
+                        </div>
+                    </div>
+                </div>
+                {% if forloop.counter|divisibleby:3 or forloop.last %}
+            </div>
+            {% endif %}
+            {% endfor %}
+            
+            <span class="validation-message" id="assigned_users-validation-message" style="display: block; text-align: center;"></span>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+{% endblock content %}
+{% block javascripts %}
+
+<!-- Click anywhere on user-->
+<script>
+    const userDivs = document.querySelectorAll('.media');
+    userDivs.forEach(function(div) {
+        const checkbox = div.querySelector('input[type="checkbox"]');
+        div.addEventListener('click', function() {
+            checkbox.checked = !checkbox.checked;
+        });
+    });
+</script>
+
+
+<!-- Team to load ajax-->
+<script>
+    $(document).ready(function() {
+        $('#teams_to_load').change(function() {
+            var team_id = $(this).val();
+            if(team_id == "0"){
+                return
+            }
+            if (team_id) {
+                $.ajax({
+                    url: '/users/load_team/',
+                    data: {
+                        'team_id': team_id
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status == 'success') {
+                            // process the response and update the UI
+                            console.log(response.users)
+                            // Uncheck all checkboxes with name 'assigned_users'
+                            $('input[name="assigned_users"]').prop('checked', false);
+
+                            var users = response.users;
+                            // loop through each user in the users list
+                            for (var i = 0; i < users.length; i++) {
+                                var user_id = users[i].id;
+                                // check the checkbox with the corresponding user id
+                                $('#assigned_users_' + user_id).prop('checked', true);
+                            }
+  
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('AJAX error: ' + error);
+                    }
+                });
+            }
+        });
+    });
+    
+</script>
+
+{% endblock javascripts %}

@@ -1,0 +1,41 @@
+[
+{
+  "model": "components.template",
+  "pk": 40,
+  "fields": {
+    "name": "Threat Track Default Template",
+    "about": "This is the default template of Threat-Track. You can delete this template",
+    "file": "templates/Threat_Track_Default_Template.docx",
+    "chart_settings": {
+      "charts": [
+        {
+          "type": "pie",
+          "title": "Vulnerability Risk Distribution (Pie)",
+          "x_label": "",
+          "y_label": "",
+          "size": 120,
+          "colors": {
+            "Critical": "#c00000",
+            "High": "#ff0000",
+            "Medium": "#ffc000",
+            "Low": "#ffff00"
+          }
+        },
+        {
+          "type": "bar",
+          "title": "Vulnerability Risk Distribution (Bar)",
+          "x_label": "Risk Levels",
+          "y_label": "Count",
+          "size": 120,
+          "colors": {
+            "Critical": "#c00000",
+            "High": "#ff0000",
+            "Medium": "#ffc000",
+            "Low": "#ffff00"
+          }
+        }
+      ]
+    }
+  }
+}
+]

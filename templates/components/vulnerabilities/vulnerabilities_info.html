@@ -1,0 +1,397 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %} Vulnerability Info {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<!-- [ CVSS Calculator ] -->
+<div class="modal fade" id="cvss" tabindex="-1" role="cvss" aria-labelledby="cvss" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addVulnModalLabel">CVSS Version 3.1 Calculator</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="" id="cvss-form" method="get" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row">
+                        
+                        <div class="col-sm-6 mb-4"> <!-- [ Attack Vector - AV ] -->
+                            <div class="form-group">
+                                <label>Select Attack Vector (AV)</label>
+                                <select name="AV" class="form-control" required>
+                                    <option value="">Attack vector</option>
+                                    <option value="N">Network</option>
+                                    <option value="A">Adjacent</option>
+                                    <option value="L">Local</option>
+                                    <option value="P">Physical</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="col-sm-6 mb-4"> <!-- [ Attack Complexity - AC ] -->
+                            <div class="form-group">
+                                <label>Attack Complexity (AC)</label>
+                                <select name="AC" class="form-control" required>
+                                    <option value="">Select Attack complexity</option>
+                                    <option value="L">Low</option>
+                                    <option value="H">High</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 mb-4"> <!-- [ Privileges Required - PR ] -->
+                            <div class="form-group">
+                                <label>Privileges Required (PR)</label>
+                                <select name="PR" class="form-control" required>
+                                    <option value="">Select Privileges required</option>
+                                    <option value="N">None</option>
+                                    <option value="L">Low</option>
+                                    <option value="H">High</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 mb-4">
+                            <div class="form-group">
+                                <label>User Interaction (UI)</label>
+                                <select name="UI" class="form-control" required>
+                                    <option value="">Select User interaction</option>
+                                    <option value="N">None</option>
+                                    <option value="R">Required</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="col-sm-6 mb-4">
+                            <div class="form-group">
+                                <label>Scope (S)</label>
+                                <select name="S" class="form-control" required>
+                                    <option value="">Select Scope</option>
+                                    <option value="U">Unchanged</option>
+                                    <option value="C">Changed</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 mb-4">
+                            <div class="form-group">
+                                <label>Confidentiality (C)</label>
+                                <select name="C" class="form-control" required>
+                                    <option value="">Select Confidentiality</option>
+                                    <option value="N">None </option>
+                                    <option value="L">Low </option>
+                                    <option value="H">High </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 mb-4">
+                            <div class="form-group">
+                                <label>Integrity (I)</label>
+                                <select name="I" class="form-control" required>
+                                    <option value="">Select Integrity</option>
+                                    <option value="N">None (N)</option>
+                                    <option value="L">Low (L)</option>
+                                    <option value="H">High (H)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 mb-4">
+                            <div class="form-group">
+                                <label>Availability (A)</label>
+                                <select name="A" class="form-control" required>
+                                    <option value="">Select Availability</option>
+                                    <option value="N">None (N)</option>
+                                    <option value="L">Low (L)</option>
+                                    <option value="H">High (H)</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <!-- Results -->
+                        <div class="col-sm-4 mb-4">
+                            <div class="form-group">
+                                <label>Base Score</label>
+                                <input class="form-control" type="text" id="base-score" disabled>
+                            </div>
+                        </div>
+                        
+                        <div class="col-sm-4 mb-4">
+                            <div class="form-group">
+                                <label>Temporal Score</label>
+                                <input class="form-control" type="text" id="temporal-score" disabled>
+                            </div>
+                        </div>
+                        
+                        <div class="col-sm-4 mb-4">
+                            <div class="form-group">
+                                <label>Environmental Score</label>
+                                <input class="form-control" type="text" id="environmental-score" disabled>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12 mb-4">
+                            <div class="form-group">
+                                <label>Results URL</label>
+                                <input class="form-control" type="text" id="results-url" disabled>
+                            </div>
+                        </div>
+                        
+
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success">Calculate</button>
+                    <button type="button" class="btn btn-primary" id="add_base_score" data-dismiss="modal">Add Base Score</button>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+</div>
+
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <!-- [ Main Content ] start -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        <h5 class="m-b-10">{% if 'w_vulnerabilities' in USER_PERMISSIONS%}Edit {% else %} View {% endif %} Vulnerability</h5>
+                                    </div>
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a>{{app|capfirst}}</a></li>
+                                        <li class="breadcrumb-item"><a>{% if 'w_vulnerabilities' in USER_PERMISSIONS%}Edit {% else %} View {% endif %} vulnerability</a></li>
+                                        <li class="breadcrumb-item"><a>{{vulnerability.name}}</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>{% if 'w_vulnerabilities' in USER_PERMISSIONS%}Edit {% else %} View {% endif %} Vulnerability Info</h5>
+                                        </div>
+                                        <form method="post" action="" id="validateForm">
+                                            {% csrf_token %}
+                                            <div class="card-block">
+                                                <div class="row">
+
+                                                    <div class="col-sm-6 mb-4">
+                                                        <div class="form-group">
+                                                            <label>Vulnerability name</label>
+                                                            <input type="text" {% if vulnerability.name == None %} value="" {% else %} value="{{vulnerability.name}}" {% endif %} name="v_name" class="form-control validate-required">
+                                                            <span class="validation-message" id="v_name-validation-message"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6 mb-4">
+                                                        <div class="form-group">
+                                                            <label for="add">Vulnerability Tag</label>
+                                                            <input class="form-control"  type="phone" {% if vulnerability.tag == None %} value="" {% else %} value="{{vulnerability.tag}}" {% endif %} name="v_tag">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-sm-6 mb-4">
+                                                        <div class="form-group">
+                                                            <label>CVSS score (1-10)</label>
+                                                            <div class="input-group">
+                                                                <input class="form-control" type="text" name="v_cvss" id="cvss-score" {% if vulnerability.cvss == None %} value="" {% elif assessment_vulnerability.cvss == 0.0 %} value"" {% else %} value="{{vulnerability.cvss}}" {% endif %}>
+                                                                
+                                                                <div class="input-group-append">
+                                                                    <span class="input-group-text">
+                                                                        <a href="" data-toggle="modal" data-target="#cvss">
+                                                                            <i class="fa fa-calculator" title="Open CVSS 3.1 Calculator"></i>
+                                                                        </a>
+                                                                    </span>
+                                                                </div>
+
+                                                            </div>
+                                                            <span class="validation-message" id="v_cvss-validation-message"></span>
+                                                        </div>
+                                                    </div>
+
+
+                                                      <div class="col-sm-6 mb-4">
+                                                        <div class="form-group">
+                                                          <label>Vulnerability risk rating</label>
+                                                          <select name="v_risk_rating" class="form-control" id="risk-rating">
+                                                            <option value="">All risk ratings</option>
+                                                            <option value="Critical" {% if vulnerability.risk_rating == 'Critical'%} selected {% endif %}>Critical</option>
+                                                            <option value="High" {% if vulnerability.risk_rating == 'High'%} selected {% endif %}>High</option>
+                                                            <option value="Medium" {% if vulnerability.risk_rating == 'Medium'%} selected {% endif %}>Medium</option>
+                                                            <option value="Low" {% if vulnerability.risk_rating == 'Low'%} selected {% endif %}>Low</option>
+                                                          </select> 
+                                                        </div>
+                                                      </div>
+                                                    
+                                                    <div class="col-sm-12 mb-4">
+                                                        <div class="form-group">
+                                                            <label for="abt">Vulnerability description</label>
+                                                            <textarea rows="5" class="form-control" name="v_description">{% if vulnerability.description == None %}{% else %}{{vulnerability.description}}{% endif %}</textarea>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-sm-12 mb-4">
+                                                        <div class="form-group">
+                                                            <label for="abt">Vulnerability impact</label>
+                                                            <textarea rows="5" class="form-control" name="v_impact">{% if vulnerability.impact == None %}{% else %}{{vulnerability.impact}}{% endif %}</textarea>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-sm-12 mb-4">
+                                                        <div class="form-group">
+                                                            <label for="abt">Vulnerability remediation</label>
+                                                            <textarea rows="5" class="form-control" name="v_remediation">{% if vulnerability.remediation == None %}{% else %}{{vulnerability.remediation}}{% endif %}</textarea>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="col-sm-12 mb-2">
+                                                        <div class="form-group">
+                                                            <a href="{% url 'vulnerabilities' %}" class="btn btn-secondary">Back</a>
+                                                            {% if 'w_vulnerabilities' in USER_PERMISSIONS%} 
+                                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>   
+                                                
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+<!-- [ disable all the input fileds - Make it read only ]  -->
+{% if 'w_vulnerabilities' not in USER_PERMISSIONS%} 
+<script>
+    const inputElements = document.querySelectorAll('input, select, textarea'); 
+    inputElements.forEach(element => {element.disabled = true;}); 
+    
+    const editorTextAreas = document.querySelectorAll('.editor');
+    editorTextAreas.forEach(textarea => {
+        ClassicEditor.create(textarea, {extraPlugins: [MyCustomUploadAdapterPlugin],}).then(editor => {
+            editor.enableReadOnlyMode("editor");
+            const toolbarElement = editor.ui.view.toolbar.element;
+            toolbarElement.style.display = 'none';}).catch(handleSampleError);
+    });
+
+    function handleSampleError(error) {
+        const issueUrl = 'https://github.com/ckeditor/ckeditor5/issues';
+
+        const message = [
+            'Oops, something went wrong!',
+            `Please, report the following error on ${issueUrl} with the build id "4v1jdg7xl05e-i6h1ic7gzkvt" and the error stack trace:`
+        ].join('\n');
+
+        console.error(message);
+        console.error(error);
+    }
+</script>
+{% endif %}
+
+{% endblock content %}
+
+{% block javascripts %}
+<!-- Validate CVSS & evaluate RiskRating & add from calculator -->
+<script>
+    $(document).ready(function() {
+        function calculateRiskRating() {
+            const cvssScore = document.getElementById('cvss-score');
+            const riskRating = document.getElementById('risk-rating');
+
+            const score = parseFloat(cvssScore.value);
+
+            if (cvssScore.value === '') {
+                cvssScore.classList.remove("is-invalid");
+                const errorContainer = document.getElementById("v_cvss-validation-message");
+                errorContainer.textContent = "";
+                riskRating.value = '';
+            } else if (score >= 0 && score <= 10) {
+                cvssScore.classList.remove("is-invalid");
+                const errorContainer = document.getElementById("v_cvss-validation-message");
+                errorContainer.textContent = "";
+                if (score >= 0 && score <= 3.9) {
+                    riskRating.value = 'Low';
+                } else if (score >= 4 && score <= 6.9) {
+                    riskRating.value = 'Medium';
+                } else if (score >= 7 && score <= 8.9) {
+                    riskRating.value = 'High';
+                } else if (score >= 9 && score <= 10) {
+                    riskRating.value = 'Critical';
+                } else {
+                    riskRating.value = '';
+                }
+            } else {
+                const errorContainer = document.getElementById("v_cvss-validation-message");
+                errorContainer.textContent = "vulnerability cvss score must be between 0 and 10";
+                cvssScore.classList.add("is-invalid");
+                riskRating.value = '';
+                cvssScore.value = '';
+            }
+        }
+
+        $('#add_base_score').click(function() {
+            var base_score = $('#base-score').val();
+
+            // Put the data into the target input
+            $('#cvss-score').val(base_score);
+
+            // Call the function to calculate risk rating
+            calculateRiskRating();
+        });
+
+        // Add an event listener to cvss-score input to calculate risk rating on input change
+        const cvssScoreInput = document.getElementById('cvss-score');
+        cvssScoreInput.addEventListener('input', calculateRiskRating);
+    });
+</script>
+
+<!-- Send data to CVSS Calculator Ajax -->
+<script>
+    $(document).ready(function() {
+        $('#cvss-form').submit(function(e) {
+            e.preventDefault();
+            var formData = $('#cvss-form').serialize();
+            var url = '/assessments/calculate_cvss_31?' + formData;
+            $.ajax({
+                type: 'GET',
+                url: url,
+                success: function(response) {
+                    // Update the HTML form fields with the calculated scores
+                    $('#base-score').val(response.base_score);
+                    $('#temporal-score').val(response.temporal_score);
+                    $('#environmental-score').val(response.environmental_score);
+                    $('#results-url').val(response.results_url);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock javascripts %}

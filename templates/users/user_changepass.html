@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %} Cahnge Password {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <!-- [ Main Content ] start -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        <h5 class="m-b-10">Change Password</h5>
+                                    </div>
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/home"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="">Change password</a></li>
+                                        <li class="breadcrumb-item"><a href="">{{user.first_name}} {{user.last_name}}</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Change Password for {{user.username}}</h5>
+                                        </div>
+                                        <form role="form" method="post" action="" id="validateForm">
+                                        {% csrf_token %}
+                                        <div class="card-block">
+                                            <div class="row">
+                                                
+                                                <div class="col-sm-12 mb-4">
+                                                    <div class="form-group">
+                                                        <label>Old Password</label>
+                                                        <input type="password" name="old_password" class="form-control validate-required">
+                                                        <span class="validation-message" id="old_password-validation-message"></span>
+                                                    </div>
+                                                </div>   
+
+
+                                                <div class="col-sm-12 mb-4">
+                                                    <div class="form-group">
+                                                        <label>New Password</label>
+                                                        <input type="password" name="new_password" class="form-control validate-required validate-password">
+                                                        <span class="validation-message" id="new_password-validation-message"></span>
+                                                    </div>
+                                                </div>                                              
+                                                
+                                                
+                                                <div class="col-sm-12 mb-2">
+                                                    <div class="form-group">
+                                                        <a href="{% url 'users_all' %}" class="btn btn-secondary">Back</a>
+                                                        <button type="submit" class="btn btn-danger">Change password</button>
+                                                    </form>
+                                                    </div>
+                                                </div>   
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- [ Main Content ] end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            form.querySelectorAll(".is-invalid").forEach((element) => {
+                element.classList.remove("is-invalid");
+            });
+            const password = form.querySelector('input[name="new_password"]');
+            const validationMessages = [];
+
+            // Validate password
+            if (!isNotEmpty(password.value)) {
+                password.classList.add("is-invalid");
+                const errorContainer = document.querySelector("#password-error");
+                errorContainer.textContent = "Password is required";
+                validationMessages.push("Password is required");
+            } else {
+                const passwordValidationResult = validatePassword(password.value);
+                if (passwordValidationResult !== true) {
+                    password.classList.add("is-invalid");
+                    const errorContainer = document.querySelector("#password-error");
+                    errorContainer.textContent = passwordValidationResult;
+                    validationMessages.push("Password is invalid");
+                } else {
+                    const errorContainer = document.querySelector("#password-error");
+                    errorContainer.textContent = "";
+                }
+            }
+            if (validationMessages.length > 0) {
+                e.preventDefault();
+            }
+        });
+
+        function isNotEmpty(value) {
+            return value.trim() !== "";
+        }
+
+        function validatePassword(password) {
+            const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+|~\-=`{}[\]:";'<>,./])\S{8,}$/;
+
+            if (!passwordRegex.test(password)) {
+                let errorMessage = "Password must include:\n";
+
+                if (!/(?=.*\d)/.test(password)) {
+                    errorMessage += "- at least one number\n";
+                }
+
+                if (!/(?=.*[a-z])/.test(password)) {
+                    errorMessage += "- at least one lowercase letter\n";
+                }
+
+                if (!/(?=.*[A-Z])/.test(password)) {
+                    errorMessage += "- at least one uppercase letter\n";
+                }
+
+                if (!/(?=.*[!@#$%^&*()_+|~\-=`{}[\]:";'<>,./])/.test(password)) {
+                    errorMessage += "- at least one symbol\n";
+                }
+
+                if (password.length < 8) {
+                    errorMessage += "- be at least 8 characters long\n";
+                }
+
+                return errorMessage;
+            }
+
+            return true;
+        }
+    });
+</script>
+{% endblock javascripts %}

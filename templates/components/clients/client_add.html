@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %} Client Info {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <!-- [ Main Content ] start -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        <h5 class="m-b-10">Add New Client</h5>
+                                    </div>
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/home"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="javascript:">Clients</a></li>
+                                        <li class="breadcrumb-item"><a href="javascript:">Add client</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Add Client </h5>
+                                        </div>
+                                        <form role="form" method="post" action="" enctype="multipart/form-data" id="validateForm">
+                                            {% csrf_token %}
+                                        <div class="card-block">
+                                            <div class="row">
+
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label>Client name</label>
+                                                        <input type="text" name="client_name"  value="{{client.name}}" class="form-control validate-required">
+                                                        <span class="validation-message" id="client_name-validation-message"></span>
+
+                                                    </div>
+                                                </div>                                                
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label>Client email address</label>
+                                                        <input  type="text" name="client_email"  value="{{client.email}}" class="form-control validate-email" > 
+                                                        <span class="validation-message" id="client_email-validation-message"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="add">Client phone</label>
+                                                        <input type="text" name="client_phone_number" value="{{client.phone_number}}" class="form-control validate-phone">
+                                                        <span class="validation-message" id="client_phone_number-validation-message"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="add">Client logo</label>
+                                                        <input  type="file" name="client_logo" id="client_logo" class="form-control validate-file-image" >
+                                                        <span class="validation-message" id="client_logo-validation-message"></span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="col-sm-12 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="abt">Client Info</label>
+                                                        <textarea class="form-control" name="client_info">{{client.info}}</textarea>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-12 mb-2">
+                                                    <div class="form-group">
+                                                        <a href="{% url 'clients' %}" class="btn btn-secondary">Back</a>
+                                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                                    </form>
+                                                    </div>
+                                                </div>   
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- [ Main Content ] end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    {% comment %} <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector("form");
+        
+            form.addEventListener("submit", function (event) {
+                form.querySelectorAll(".is-invalid").forEach((element) => {
+                    element.classList.remove("is-invalid");
+                });
+        
+                const clientNameInput = form.querySelector('[name="client_name"]');
+                const clientEmailInput = form.querySelector('[name="client_email"]');
+                const clientPhoneNumberInput = form.querySelector('[name="client_phone_number"]');
+                const clientLogoInput = form.querySelector('[name="client_logo"]');
+                const validationMessages = [];
+        
+                // Validate client name 
+                if (!isNotEmpty(clientNameInput.value)) {
+                    clientNameInput.classList.add("is-invalid");
+                    const errorContainer = document.getElementById("client_name-error");
+                    errorContainer.textContent = "Client name is required";
+                    validationMessages.push("Client name is required");
+                } else if (!isValidName(clientNameInput.value)) {
+                    clientNameInput.classList.add("is-invalid");
+                    const errorContainer = document.getElementById("client_name-error");
+                    errorContainer.textContent = "Invalid client name";
+                    validationMessages.push("Invalid client name");
+                }else{
+                    const errorContainer = document.getElementById("client_name-error");
+                    errorContainer.textContent = "";
+                }
+        
+                // Validate client email
+                if (!isNotEmpty(clientEmailInput.value)) {
+                    const errorContainer = document.getElementById("client_email-error");
+                    errorContainer.textContent = "";
+                } else if (!isValidEmail(clientEmailInput.value)) {
+                    clientEmailInput.classList.add("is-invalid");
+                    const errorContainer = document.getElementById("client_email-error");
+                    errorContainer.textContent = "Invalid email address";
+                    validationMessages.push("Invalid email address");
+                }else{
+                    const errorContainer = document.getElementById("client_email-error");
+                    errorContainer.textContent = "";
+                }
+        
+                // Validate client phone number
+                if (!isNotEmpty(clientPhoneNumberInput.value)) {
+                    const errorContainer = document.getElementById("client_phone_number-error");
+                    errorContainer.textContent = "";
+                } else if (!isValidPhoneNumber(clientPhoneNumberInput.value)) {
+                    clientPhoneNumberInput.classList.add("is-invalid");
+                    const errorContainer = document.getElementById("client_phone_number-error");
+                    errorContainer.textContent = "Invalid phone number";
+                    validationMessages.push("Invalid phone number");
+                }else{
+                    const errorContainer = document.getElementById("client_phone_number-error");
+                    errorContainer.textContent = "";
+                }
+
+                // Validate client logo                        
+                if (isValidImage(clientLogoInput.value) || clientLogoInput.value == "") {
+                    const errorContainer = document.getElementById("client_logo-error");
+                    errorContainer.textContent = "";
+                } else {
+                    clientLogoInput.classList.add("is-invalid");
+                    const errorContainer = document.getElementById("client_logo-error");
+                    errorContainer.textContent = "Invalid image";
+                    validationMessages.push("Invalid image");
+                }
+                
+                if (clientLogoInput.files.length > 0) {
+                    const fileSize = clientLogoInput.files[0].size; // Get the size of the selected file
+                    const maxSizeBytes = 2 * 1024 * 1024; // 2 megabytes in bytes
+                    if (fileSize > maxSizeBytes) {
+                        clientLogoInput.classList.add("is-invalid");
+                        const errorContainer = document.getElementById("client_logo-error");
+                        errorContainer.textContent = "Client logo size exceeds the allowed limit of 2 MB";
+                        validationMessages.push("Client logo size exceeds the allowed limit of 2 MB");
+                    }
+                }
+
+
+                if (validationMessages.length > 0) {
+                    event.preventDefault();
+                }
+            });
+        
+            function isNotEmpty(value) {
+                return value.trim() !== "";
+            }
+        
+            function isValidName(name) {
+                const nameRegex = /^[a-zA-Z ,.'-]+$/;
+                return nameRegex.test(name) && name.length <= 50;
+            }
+        
+            function isValidEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email) && email.length <= 50;
+            }    
+        
+            function isValidPhoneNumber(phone) {
+                const phoneRegex = /^\+(9[976]\d|8[987530]\d|6[987]\d|5[90]\d|4[987654310]\d|3[875]\d|2[98654321]\d|9[8543210]|8[6421]|6[6543210]|5[87654321]|4[987654310]|3[9643210]|2[70]|7|1)\d{1,14}$/;
+                return phoneRegex.test(phone);
+            }
+    
+            function isValidImage(image) {
+                const imageRegex = /([a-zA-Z0-9\s_\\.\-\(\):])+(.jpg|.png|.jpeg)$/;
+                return imageRegex.test(image.toLowerCase());
+            }
+        });
+    
+    </script> {% endcomment %}
+<!-- The below style should alos be delted as we are no longer using it -->
+{% endblock javascripts %}

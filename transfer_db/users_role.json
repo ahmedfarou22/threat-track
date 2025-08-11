@@ -1,0 +1,131 @@
+[
+{
+  "model": "users.role",
+  "pk": 5,
+  "fields": {
+    "name": "Manager",
+    "description": "Can not be edited it has read and write access to every thing",
+    "color": "#1de9b6",
+    "permissions": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      17,
+      18,
+      19,
+      20,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37
+    ]
+  }
+},
+{
+  "model": "users.role",
+  "pk": 6,
+  "fields": {
+    "name": "Team Lead",
+    "description": "Read write access to every thing except Users & Teams & Roles ",
+    "color": "#dcbc18",
+    "permissions": [
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      17,
+      18,
+      19,
+      20,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37
+    ]
+  }
+},
+{
+  "model": "users.role",
+  "pk": 7,
+  "fields": {
+    "name": "Pentester",
+    "description": "Read & write access to assigned assessments",
+    "color": "#a389d4",
+    "permissions": [
+      7,
+      9,
+      11,
+      13,
+      14,
+      18,
+      19,
+      21,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37
+    ]
+  }
+},
+{
+  "model": "users.role",
+  "pk": 8,
+  "fields": {
+    "name": "Guest",
+    "description": "Only read access to assigned assessments",
+    "color": "#04a9f5",
+    "permissions": [
+      18,
+      19,
+      21,
+      26,
+      28,
+      30
+    ]
+  }
+}
+]

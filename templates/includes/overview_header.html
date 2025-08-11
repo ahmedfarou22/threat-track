@@ -1,0 +1,75 @@
+<!-- [ navigation menu ] start -->
+<div class="pcoded-main-container">
+    <div class="pcoded-wrapper">
+        <div class="pcoded-content">
+            <div class="pcoded-inner-content">
+                <div class="main-body">
+                    <div class="page-wrapper">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h5 class="mt-4">{% if header_pill == 'edit'%} Edit {% endif %}Assessment -
+                                    {{assessment.name}} </h5>
+                                <hr>
+
+                                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+
+                                    {% if 'r_assessment_summary' in USER_PERMISSIONS %}
+                                    <li class="nav-item">
+                                        <a class="nav-link {% if header_pill == 'summary' or header_pill == 'edit'%} active {% endif %}"
+                                            href="{% url 'assessment_summary' assessment.id %}">Summary</a>
+                                    </li>
+                                    {% endif %}
+
+                                    {% if 'r_assessment_additional_fields' in USER_PERMISSIONS %}
+                                    <li class="nav-item">
+                                        <a class="nav-link {% if header_pill == 'additional_fields'%} active {% endif %}"
+                                            href="{% url 'assessment_additional_fields' assessment.id %}">Additional
+                                            Fields</a>
+                                    </li>
+                                    {% endif %}
+
+                                    {% if 'r_assessment_vulnerabilities' in USER_PERMISSIONS %}
+                                    <li class="nav-item">
+                                        <a class="nav-link {% if header_pill == 'vulnerabilities'%} active {% endif %}"
+                                            href="{% url 'assessment_vulnerabilities' assessment.id %}">Vulnerabilities</a>
+                                    </li>
+                                    {% endif %}
+
+                                    {% if 'r_assessment_attached_files' in USER_PERMISSIONS %}
+                                    <li class="nav-item">
+                                        <a class="nav-link {% if header_pill == 'attached_files'%} active {% endif %}"
+                                            href="{% url 'assessment_attached_files' assessment.id %}">Attached
+                                            Files</a>
+                                    </li>
+                                    {% endif %}
+
+                                    {% if 'r_assessment_tasks' in USER_PERMISSIONS %}
+                                    <li class="nav-item">
+                                        <a class="nav-link {% if header_pill == 'tasks'%} active {% endif %}" href="{% url 'assessment_tasks' assessment.id %}">Tasks</a>
+                                    </li>
+                                    {% endif %}
+
+                                    {% if 'r_assessment_chat_room' in USER_PERMISSIONS %}
+                                    <li class="nav-item">
+                                        <a class="nav-link {% if header_pill == 'chat_room'%} active {% endif %}"
+                                            href="{% url 'assessment_chat_room' assessment.id %}">Chat Room</a>
+                                    </li>
+                                    {% endif %}
+
+                                    {% if 'generate_report' in USER_PERMISSIONS %}
+                                    <li class="nav-item">
+                                        <a class="nav-link {% if header_pill == 'reporting'%} active {% endif %}"
+                                            href="{% url 'assessment_reporting' assessment.id %}">Reporting</a>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row">
+                            {% comment %} </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div> {% endcomment %}

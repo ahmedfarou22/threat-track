@@ -1,0 +1,23 @@
+[
+{
+  "model": "assessments.taskstatus",
+  "pk": 1,
+  "fields": {
+    "name": "Not started"
+  }
+},
+{
+  "model": "assessments.taskstatus",
+  "pk": 2,
+  "fields": {
+    "name": "In progress"
+  }
+},
+{
+  "model": "assessments.taskstatus",
+  "pk": 3,
+  "fields": {
+    "name": "Completed"
+  }
+}
+]

@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %} Client Info {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <!-- [ Main Content ] start -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        <h5 class="m-b-10">{% if 'w_clients' in USER_PERMISSIONS%}Edit {% else %} View {% endif %}Client</h5>
+                                    </div>
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a >{{app|capfirst}}</a></li>
+                                        <li class="breadcrumb-item"><a >{% if 'w_clients' in USER_PERMISSIONS%}Edit {% else %} View {% endif %} client</a></li>
+                                        <li class="breadcrumb-item"><a >{{client.name}}</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-sm-8">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>{% if 'w_clients' in USER_PERMISSIONS%}Edit {% else %} View {% endif %} Client Info</h5>
+                                        </div>
+                                        <form method="post" action="" enctype="multipart/form-data" id="validateForm">
+                                            {% csrf_token %}
+                                        <div class="card-block">
+                                            <div class="row">
+
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label>Client name</label>
+                                                        <input class="form-control validate-required" type="text" value="{{client.name}}" name="client_name">
+                                                        <span class="validation-message" id="client_name-validation-message"></span>
+                                                    </div>
+                                                </div>                                                
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label>Client email address</label>
+                                                        <input class="form-control validate-email" type="text" value="{{client.email}}" name="client_email">  
+                                                        <span class="validation-message" id="client_email-validation-message"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="add">Client phone</label>
+                                                        <input class="form-control validate-phone"  type="phone" value="{{client.phone_number}}" name="client_phone_number">
+                                                        <span class="validation-message" id="client_phone_number-validation-message"></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="add">Update logo</label>
+                                                        <input class="form-control validate-file-image"  type="file" name="client_logo">
+                                                        <span class="validation-message" id="client_logo-validation-message"></span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="col-sm-12 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="abt">Client Info</label>
+                                                        <textarea rows="5" class="form-control" name="client_info">{{client.info}}</textarea>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-12 mb-2">
+                                                    <div class="form-group">
+                                                        <a href="{% url 'clients' %}" class="btn btn-secondary">Back</a>
+                                                        {% if 'w_clients' in USER_PERMISSIONS%}    
+                                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>   
+                                            
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="card">
+                                        <div class="card-block">
+                                            <div class="d-flex align-items-center justify-content-center flex-column">
+                                                {% if client.logo %} 
+                                                <div class="w-50 p-3">
+                                                    <img src="{{client.logo.url}}" alt="profile image" class="img-fluid ">                                                    
+                                                </div>
+                                                {% else %}
+                                                <p> No logo uploaded</p>
+                                                {% endif %}
+                                                <div class="text-center">
+                                                    <h4 class="font-weight-bold h6">
+                                                        {{ client.name }}
+                                                    </h4>
+                                                    
+                                                </div>
+                                            </div>
+                                        </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- [ Main Content ] end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <!-- [ Main Content ] end -->
+{% if 'w_clients' not in USER_PERMISSIONS%} 
+    <script> // disable all the input fileds (Make it read only)
+      const inputElements = document.querySelectorAll('input, select, textarea'); 
+      inputElements.forEach(element => {element.disabled = true;}); 
+      
+      const editorTextAreas = document.querySelectorAll('.editor');
+      editorTextAreas.forEach(textarea => {
+          ClassicEditor.create(textarea, {extraPlugins: [MyCustomUploadAdapterPlugin],}).then(editor => {
+              editor.enableReadOnlyMode("editor");
+              const toolbarElement = editor.ui.view.toolbar.element;
+              toolbarElement.style.display = 'none';}).catch(handleSampleError);
+      });
+    
+      function handleSampleError(error) {
+          const issueUrl = 'https://github.com/ckeditor/ckeditor5/issues';
+    
+          const message = [
+              'Oops, something went wrong!',
+              `Please, report the following error on ${issueUrl} with the build id "4v1jdg7xl05e-i6h1ic7gzkvt" and the error stack trace:`
+          ].join('\n');
+    
+          console.error(message);
+          console.error(error);
+      }
+    </script>
+{% endif %}
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+{% endblock javascripts %}
