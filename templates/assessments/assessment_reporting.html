@@ -27,6 +27,33 @@
         </div>
         <div class="col-xl-4 col-lg-12 task-detail-right">
             <div class="card">
+                <div class="card-block">
+                    {% if assessment.assessment_structure %}
+                        {% if assessment.assessment_structure.template_file %}
+                            <form method="post" action="" enctype="multipart/form-data"> 
+                                {% csrf_token %}
+                                <input type="hidden" name="template_from_structure" value="{{ assessment.assessment_structure.id }}">
+                                <button type="submit" class="btn btn-primary" style="width:100%">
+                                    Download Generated Report
+                                </button>
+                            </form>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>No Template Available</strong>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>No Assessment Structure Template</strong>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% comment %} Templates functionality temporarily disabled
+            <div class="card">
                 <div class="card-header">
                     <h5>Select Template From Components</h5>
                 </div>
@@ -48,6 +75,7 @@
                         </div>
                 </div>
             </div>
+            {% endcomment %}
         
             <div class="card">
                 <div class="card-header">

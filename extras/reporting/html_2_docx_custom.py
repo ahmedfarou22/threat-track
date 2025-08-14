@@ -29,6 +29,16 @@ from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
 from bs4 import BeautifulSoup
 
+# Django settings import - with fallback for standalone usage
+try:
+    from django.conf import settings
+    MEDIA_URL = getattr(settings, 'MEDIA_URL', '/media/')
+    MEDIA_ROOT = getattr(settings, 'MEDIA_ROOT', 'media')
+except ImportError:
+    # Fallback for standalone usage
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = 'media'
+
 
 
 # -------------- Start of FAROUK FUNCTIONS --------------
@@ -69,6 +79,44 @@ def fix_html_img(html_content):
             if img_tag:
                 img_tag['width'] = width_value
     return str(soup)
+
+
+def resolve_media_path(url_or_path):
+    # Handle relative paths starting with MEDIA_URL
+    if url_or_path.startswith(MEDIA_URL):
+        # Remove MEDIA_URL prefix and join with MEDIA_ROOT
+        relative_path = url_or_path[len(MEDIA_URL):]
+        local_path = os.path.join(MEDIA_ROOT, relative_path)
+        return local_path if os.path.exists(local_path) else None
+    
+    # Handle absolute URLs
+    if is_url(url_or_path):
+        parsed_url = urlparse(url_or_path)
+        # Check if the path starts with MEDIA_URL
+        if parsed_url.path.startswith(MEDIA_URL):
+            relative_path = parsed_url.path[len(MEDIA_URL):]
+            local_path = os.path.join(MEDIA_ROOT, relative_path)
+            return local_path if os.path.exists(local_path) else None
+    
+    # Handle direct file paths
+    if os.path.exists(url_or_path):
+        return url_or_path
+    
+    return None
+
+
+def calculate_image_dimensions(image_path, width_percent):
+    try:
+        with Image.open(image_path) as pil_image:
+            original_width, original_height = pil_image.size
+            new_width = int(original_width * (width_percent / 100))
+            new_height = int(original_height * (width_percent / 100))
+            # Convert pixels to inches (assuming 96 DPI)
+            width_inches = new_width / 96.0
+            height_inches = new_height / 96.0
+            return width_inches, height_inches
+    except Exception:
+        return None, None
 
 
 def html_2_sub_docx(html) :
@@ -404,36 +452,49 @@ class HtmlToDocx(HTMLParser):
             self.skip_tag = 'img'
             return
         src = current_attrs['src']
-        if current_attrs['width']:
+        width_percent = None
+        if current_attrs.get('width'):
             width_percent = int(float(current_attrs['width']))
             
-        # fetch image
-        src_is_url = is_url(src)
-        if src_is_url:
+        # fetch image using improved helper functions
+        image = None
+        width = None
+        height = None
+        
+        # Try to fetch image from URL first
+        if is_url(src):
             try:
                 if width_percent:
-                    # this function returns the image along with the new dimintions in inshes based on given width persent
-                    image,width,hight = fetch_image_with_dimensions(src,width_percent) 
+                    image, width, height = fetch_image_with_dimensions(src, width_percent)
                 else:
                     image = fetch_image(src)
-                
             except urllib.error.URLError:
                 image = None
-        else:
-            image = src
+
+        # If URL fetch failed or it's not a URL, try to resolve as local media path
+        if image is None:
+            local_path = resolve_media_path(src)
+            if local_path:
+                image = local_path
+                # Calculate dimensions if width percentage is provided
+                if width_percent:
+                    width, height = calculate_image_dimensions(local_path, width_percent)
         # add image to doc
         if image:
             try:
                 if isinstance(self.doc, docx.document.Document):
-                    self.doc.add_picture(image,width=Inches(width), height=Inches(hight))
+                    if width and height:
+                        self.doc.add_picture(image, width=Inches(width), height=Inches(height))
+                    else:
+                        self.doc.add_picture(image)
                     last_paragraph = self.doc.paragraphs[-1] 
                     last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
                 else:
                     self.add_image_to_cell(self.doc, image)
-            except FileNotFoundError:
+            except (FileNotFoundError, Exception):
                 image = None
         if not image:
-            if src_is_url:
+            if is_url(src):
                 self.doc.add_paragraph("<image: %s>" % src)
             else:
                 # avoid exposing filepaths in document

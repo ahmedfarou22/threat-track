@@ -1,220 +1,482 @@
 {% extends "base.html" %}
 {% load static %}
-
-
-{% block title %} Client Info {% endblock %} 
+{% block title %}Client Info{% endblock %}
 
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
 
-    <!-- [ Main Content ] start -->
-    <div class="pcoded-main-container">
-        <div class="pcoded-wrapper">
-
-            <div class="pcoded-content">
-                <div class="pcoded-inner-content">
-                    <div class="main-body">
-                        <div class="page-wrapper">
-                            <!-- [ Main Content ] start -->
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="page-header-title">
-                                        <h5 class="m-b-10">Add New Client</h5>
-                                    </div>
-                                    <ul class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="/home"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="javascript:">Clients</a></li>
-                                        <li class="breadcrumb-item"><a href="javascript:">Add client</a></li>
-                                    </ul>
-                                </div>
-                                <div class="col-sm-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Add Client </h5>
-                                        </div>
-                                        <form role="form" method="post" action="" enctype="multipart/form-data" id="validateForm">
-                                            {% csrf_token %}
-                                        <div class="card-block">
-                                            <div class="row">
-
-                                                <div class="col-sm-6 mb-4">
-                                                    <div class="form-group">
-                                                        <label>Client name</label>
-                                                        <input type="text" name="client_name"  value="{{client.name}}" class="form-control validate-required">
-                                                        <span class="validation-message" id="client_name-validation-message"></span>
-
-                                                    </div>
-                                                </div>                                                
-                                                <div class="col-sm-6 mb-4">
-                                                    <div class="form-group">
-                                                        <label>Client email address</label>
-                                                        <input  type="text" name="client_email"  value="{{client.email}}" class="form-control validate-email" > 
-                                                        <span class="validation-message" id="client_email-validation-message"></span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-6 mb-4">
-                                                    <div class="form-group">
-                                                        <label for="add">Client phone</label>
-                                                        <input type="text" name="client_phone_number" value="{{client.phone_number}}" class="form-control validate-phone">
-                                                        <span class="validation-message" id="client_phone_number-validation-message"></span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-6 mb-4">
-                                                    <div class="form-group">
-                                                        <label for="add">Client logo</label>
-                                                        <input  type="file" name="client_logo" id="client_logo" class="form-control validate-file-image" >
-                                                        <span class="validation-message" id="client_logo-validation-message"></span>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="col-sm-12 mb-4">
-                                                    <div class="form-group">
-                                                        <label for="abt">Client Info</label>
-                                                        <textarea class="form-control" name="client_info">{{client.info}}</textarea>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-sm-12 mb-2">
-                                                    <div class="form-group">
-                                                        <a href="{% url 'clients' %}" class="btn btn-secondary">Back</a>
-                                                        <button type="submit" class="btn btn-primary">Submit</button>
-                                                    </form>
-                                                    </div>
-                                                </div>   
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- [ Main Content ] end -->
-                        </div>
-                    </div>
+<!-- [ Main Content ] start -->
+<div class="pcoded-main-container">
+  <div class="pcoded-wrapper">
+    <div class="pcoded-content">
+      <div class="pcoded-inner-content">
+        <div class="main-body">
+          <div class="page-wrapper">
+            <!-- [ Main Content ] start -->
+            <div class="row">
+              <div class="col-md-12">
+                <div class="page-header-title">
+                  <h5 class="m-b-10">Add New Client</h5>
                 </div>
+                <ul class="breadcrumb">
+                  <li class="breadcrumb-item">
+                    <a href="/home"><i class="feather icon-home"></i></a>
+                  </li>
+                  <li class="breadcrumb-item">
+                    <a href="javascript:">Clients</a>
+                  </li>
+                  <li class="breadcrumb-item">
+                    <a href="javascript:">Add client</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="col-sm-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h5>Add Client</h5>
+                  </div>
+                  <form
+                    role="form"
+                    method="post"
+                    action=""
+                    enctype="multipart/form-data"
+                    id="clientAddForm"
+                  >
+                    {% csrf_token %}
+                    <div class="card-block">
+                      <div class="row">
+                        <div class="col-sm-6 mb-4">
+                          <div class="form-group">
+                            <label>Client name</label>
+                            <input
+                              type="text"
+                              name="client_name"
+                              value="{{client.name}}"
+                              class="form-control validate-required"
+                            />
+                            <span
+                              class="validation-message"
+                              id="client_name-validation-message"
+                            ></span>
+                          </div>
+                        </div>
+                        <div class="col-sm-6 mb-4">
+                          <div class="form-group">
+                            <label>Client email address</label>
+                            <input
+                              type="text"
+                              name="client_email"
+                              value="{{client.email}}"
+                              class="form-control validate-email"
+                            />
+                            <span
+                              class="validation-message"
+                              id="client_email-validation-message"
+                            ></span>
+                          </div>
+                        </div>
+                        <div class="col-sm-6 mb-4">
+                          <div class="form-group">
+                            <label for="add">Client phone</label>
+                            <input
+                              type="text"
+                              name="client_phone_number"
+                              value="{{client.phone_number}}"
+                              class="form-control validate-phone"
+                            />
+                            <span
+                              class="validation-message"
+                              id="client_phone_number-validation-message"
+                            ></span>
+                          </div>
+                        </div>
+                        <div class="col-sm-6 mb-4">
+                          <div class="form-group">
+                            <label for="add">Client logo</label>
+                            <input
+                              type="file"
+                              name="client_logo"
+                              id="client_logo"
+                              class="form-control validate-file-image"
+                            />
+                            <span
+                              class="validation-message"
+                              id="client_logo-validation-message"
+                            ></span>
+                          </div>
+                        </div>
+
+                        <div class="col-sm-12 mb-4">
+                          <div class="form-group">
+                            <label for="abt">Client Info</label>
+                            <textarea class="form-control" name="client_info">
+{{client.info}}</textarea
+                            >
+                          </div>
+                        </div>
+
+                        <div class="col-sm-12 mb-4">
+                          <div class="form-group">
+                            <label>Contact Information</label>
+                            <!-- Hidden script to store diffusion data as proper JSON -->
+                            <script type="application/json" id="diffusion-data">
+                              {{ client.diffusion_list|json_script:"diffusion-data" }}
+                            </script>
+                            <div class="card">
+                              <div
+                                class="card-header d-flex justify-content-between align-items-center"
+                              >
+                                <button
+                                  type="button"
+                                  class="btn btn-info"
+                                  id="addDiffusionRow"
+                                >
+                                  Add Contact
+                                </button>
+                              </div>
+                              <div class="card-body">
+                                <div class="table-responsive">
+                                  <table
+                                    class="table table-hover"
+                                    id="diffusionTable"
+                                  >
+                                    <thead>
+                                      <tr>
+                                        <th>Contact Name</th>
+                                        <th>Contact Title</th>
+                                        <th>Contact Email</th>
+                                        <th>Actions</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody id="diffusionTableBody">
+                                      <!-- Dynamic rows will be added here -->
+                                    </tbody>
+                                  </table>
+                                </div>
+                                <div
+                                  id="noDiffusionItems"
+                                  class="text-center text-muted py-3"
+                                >
+                                  <p class="mb-0">
+                                    No contacts added yet. Click "Add Contact" to
+                                    get started.
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-sm-12 mb-2">
+                          <div class="form-group">
+                            <a
+                              href="{% url 'clients' %}"
+                              class="btn btn-secondary"
+                              >Back</a
+                            >
+                            <button type="submit" class="btn btn-primary">
+                              Submit
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
             </div>
-            
+            <!-- [ Main Content ] end -->
+          </div>
         </div>
+      </div>
     </div>
-    <!-- [ Main Content ] end -->
+  </div>
+</div>
+<!-- [ Main Content ] end -->
 
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-    {% comment %} <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const form = document.querySelector("form");
-        
-            form.addEventListener("submit", function (event) {
-                form.querySelectorAll(".is-invalid").forEach((element) => {
-                    element.classList.remove("is-invalid");
-                });
-        
-                const clientNameInput = form.querySelector('[name="client_name"]');
-                const clientEmailInput = form.querySelector('[name="client_email"]');
-                const clientPhoneNumberInput = form.querySelector('[name="client_phone_number"]');
-                const clientLogoInput = form.querySelector('[name="client_logo"]');
-                const validationMessages = [];
-        
-                // Validate client name 
-                if (!isNotEmpty(clientNameInput.value)) {
-                    clientNameInput.classList.add("is-invalid");
-                    const errorContainer = document.getElementById("client_name-error");
-                    errorContainer.textContent = "Client name is required";
-                    validationMessages.push("Client name is required");
-                } else if (!isValidName(clientNameInput.value)) {
-                    clientNameInput.classList.add("is-invalid");
-                    const errorContainer = document.getElementById("client_name-error");
-                    errorContainer.textContent = "Invalid client name";
-                    validationMessages.push("Invalid client name");
-                }else{
-                    const errorContainer = document.getElementById("client_name-error");
-                    errorContainer.textContent = "";
-                }
-        
-                // Validate client email
-                if (!isNotEmpty(clientEmailInput.value)) {
-                    const errorContainer = document.getElementById("client_email-error");
-                    errorContainer.textContent = "";
-                } else if (!isValidEmail(clientEmailInput.value)) {
-                    clientEmailInput.classList.add("is-invalid");
-                    const errorContainer = document.getElementById("client_email-error");
-                    errorContainer.textContent = "Invalid email address";
-                    validationMessages.push("Invalid email address");
-                }else{
-                    const errorContainer = document.getElementById("client_email-error");
-                    errorContainer.textContent = "";
-                }
-        
-                // Validate client phone number
-                if (!isNotEmpty(clientPhoneNumberInput.value)) {
-                    const errorContainer = document.getElementById("client_phone_number-error");
-                    errorContainer.textContent = "";
-                } else if (!isValidPhoneNumber(clientPhoneNumberInput.value)) {
-                    clientPhoneNumberInput.classList.add("is-invalid");
-                    const errorContainer = document.getElementById("client_phone_number-error");
-                    errorContainer.textContent = "Invalid phone number";
-                    validationMessages.push("Invalid phone number");
-                }else{
-                    const errorContainer = document.getElementById("client_phone_number-error");
-                    errorContainer.textContent = "";
-                }
+<!-- Dynamic Diffusion List Table Script -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    let diffusionRowCounter = 0;
+    const tableBody = document.getElementById("diffusionTableBody");
+    const noItemsDiv = document.getElementById("noDiffusionItems");
+    const addButton = document.getElementById("addDiffusionRow");
 
-                // Validate client logo                        
-                if (isValidImage(clientLogoInput.value) || clientLogoInput.value == "") {
-                    const errorContainer = document.getElementById("client_logo-error");
-                    errorContainer.textContent = "";
-                } else {
-                    clientLogoInput.classList.add("is-invalid");
-                    const errorContainer = document.getElementById("client_logo-error");
-                    errorContainer.textContent = "Invalid image";
-                    validationMessages.push("Invalid image");
-                }
-                
-                if (clientLogoInput.files.length > 0) {
-                    const fileSize = clientLogoInput.files[0].size; // Get the size of the selected file
-                    const maxSizeBytes = 2 * 1024 * 1024; // 2 megabytes in bytes
-                    if (fileSize > maxSizeBytes) {
-                        clientLogoInput.classList.add("is-invalid");
-                        const errorContainer = document.getElementById("client_logo-error");
-                        errorContainer.textContent = "Client logo size exceeds the allowed limit of 2 MB";
-                        validationMessages.push("Client logo size exceeds the allowed limit of 2 MB");
-                    }
-                }
+    // Function to show/hide the "no items" message
+    function toggleNoItemsMessage() {
+      const rowCount = tableBody.children.length;
+      if (rowCount === 0) {
+        noItemsDiv.style.display = "block";
+        document.getElementById("diffusionTable").style.display = "none";
+      } else {
+        noItemsDiv.style.display = "none";
+        document.getElementById("diffusionTable").style.display = "table";
+      }
+    }
 
+    // Function to add a new row
+    function addDiffusionRow(name = "", title = "", email = "") {
+      diffusionRowCounter++;
+      const newRow = document.createElement("tr");
+      newRow.setAttribute("data-row-id", diffusionRowCounter);
 
-                if (validationMessages.length > 0) {
-                    event.preventDefault();
-                }
-            });
-        
-            function isNotEmpty(value) {
-                return value.trim() !== "";
-            }
-        
-            function isValidName(name) {
-                const nameRegex = /^[a-zA-Z ,.'-]+$/;
-                return nameRegex.test(name) && name.length <= 50;
-            }
-        
-            function isValidEmail(email) {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                return emailRegex.test(email) && email.length <= 50;
-            }    
-        
-            function isValidPhoneNumber(phone) {
-                const phoneRegex = /^\+(9[976]\d|8[987530]\d|6[987]\d|5[90]\d|4[987654310]\d|3[875]\d|2[98654321]\d|9[8543210]|8[6421]|6[6543210]|5[87654321]|4[987654310]|3[9643210]|2[70]|7|1)\d{1,14}$/;
-                return phoneRegex.test(phone);
-            }
-    
-            function isValidImage(image) {
-                const imageRegex = /([a-zA-Z0-9\s_\\.\-\(\):])+(.jpg|.png|.jpeg)$/;
-                return imageRegex.test(image.toLowerCase());
-            }
+      newRow.innerHTML = `
+            <td>
+                <input type="text" 
+                       name="diffusion_name_${diffusionRowCounter}" 
+                       value="${name}" 
+                       class="form-control validate-required validate-first-last-name">
+                <span class="validation-message text-danger small" id="diffusion_name_${diffusionRowCounter}-validation-message"></span>
+            </td>
+            <td>
+                <input type="text" 
+                       name="diffusion_title_${diffusionRowCounter}" 
+                       value="${title}" 
+                       class="form-control form-control-sm">
+                <span class="validation-message text-danger small" id="diffusion_title_${diffusionRowCounter}-validation-message"></span>
+            </td>
+            <td>
+                <input type="text" 
+                       name="diffusion_email_${diffusionRowCounter}" 
+                       value="${email}" 
+                       class="form-control validate-email">
+                <span class="validation-message text-danger small" id="diffusion_email_${diffusionRowCounter}-validation-message"></span>
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger remove-diffusion-row" title="Remove this item">
+                    Delete
+                </button>
+            </td>
+        `;
+
+      tableBody.appendChild(newRow);
+      toggleNoItemsMessage();
+
+      // Add event listener for the remove button
+      const removeButton = newRow.querySelector(".remove-diffusion-row");
+      removeButton.addEventListener("click", function () {
+        newRow.remove();
+        toggleNoItemsMessage();
+      });
+    }
+
+    // Add button event listener
+    addButton.addEventListener("click", function () {
+      addDiffusionRow();
+    });
+
+    // Initialize with no items message
+    toggleNoItemsMessage();
+
+    // Add initial row if needed (for editing existing clients)
+    // If editing and diffusion list exists, populate it
+    try {
+      // Get data from JSON script element
+      const diffusionDataScript = document.getElementById("diffusion-data");
+      let diffusionData = [];
+
+      if (diffusionDataScript) {
+        const diffusionDataString = diffusionDataScript.textContent.trim();
+        if (
+          diffusionDataString &&
+          diffusionDataString !== "" &&
+          diffusionDataString !== "null" &&
+          diffusionDataString !== "None" &&
+          diffusionDataString !== "[]"
+        ) {
+          diffusionData = JSON.parse(diffusionDataString);
+        }
+      } else {
+        // Fallback to template variable (old method)
+        const diffusionDataString = "{{ client.diffusion_list|escapejs }}";
+        if (
+          diffusionDataString &&
+          diffusionDataString !== "" &&
+          diffusionDataString !== "null" &&
+          diffusionDataString !== "None" &&
+          diffusionDataString !== "[]"
+        ) {
+          diffusionData = JSON.parse(diffusionDataString);
+        }
+      }
+
+      if (Array.isArray(diffusionData) && diffusionData.length > 0) {
+        diffusionData.forEach((item) => {
+          addDiffusionRow(item.name || "", item.title || "", item.email || "");
         });
-    
-    </script> {% endcomment %}
-<!-- The below style should alos be delted as we are no longer using it -->
+      }
+    } catch (e) {
+      // If parsing fails, just start with empty table
+      console.log("No existing diffusion list data or parsing error:", e);
+    }
+
+    // Form submission handler to collect diffusion list data and validate
+    const form = document.getElementById("clientAddForm");
+    if (form) {
+      form.addEventListener("submit", function (e) {
+        console.log("Form submission started");
+        console.log("Form element found:", form);
+
+        // Clear previous validation messages and classes
+        form.querySelectorAll(".is-invalid").forEach((element) => {
+          element.classList.remove("is-invalid");
+        });
+        form.querySelectorAll(".validation-message").forEach((element) => {
+          element.textContent = "";
+        });
+
+        let hasErrors = false;
+
+        // Validate required fields
+        const clientNameInput = form.querySelector('[name="client_name"]');
+        console.log(
+          "Client name input:",
+          clientNameInput,
+          "Value:",
+          clientNameInput ? clientNameInput.value : "N/A"
+        );
+        if (!clientNameInput || !clientNameInput.value.trim()) {
+          if (clientNameInput) {
+            clientNameInput.classList.add("is-invalid");
+            const errorSpan = document.getElementById(
+              "client_name-validation-message"
+            );
+            if (errorSpan) errorSpan.textContent = "Client name is required";
+          }
+          hasErrors = true;
+        }
+
+        // Validate email if provided
+        const clientEmailInput = form.querySelector('[name="client_email"]');
+        if (clientEmailInput && clientEmailInput.value.trim()) {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(clientEmailInput.value)) {
+            clientEmailInput.classList.add("is-invalid");
+            const errorSpan = document.getElementById(
+              "client_email-validation-message"
+            );
+            if (errorSpan) errorSpan.textContent = "Invalid email address";
+            hasErrors = true;
+          }
+        }
+
+        // Validate phone if provided
+        const clientPhoneInput = form.querySelector(
+          '[name="client_phone_number"]'
+        );
+        if (clientPhoneInput && clientPhoneInput.value.trim()) {
+          const phoneRegex = /^\+?[\d\s\-\(\)]{7,15}$/;
+          if (!phoneRegex.test(clientPhoneInput.value)) {
+            clientPhoneInput.classList.add("is-invalid");
+            const errorSpan = document.getElementById(
+              "client_phone_number-validation-message"
+            );
+            if (errorSpan) errorSpan.textContent = "Invalid phone number";
+            hasErrors = true;
+          }
+        }
+
+        // Validate diffusion list emails
+        const rows = tableBody.querySelectorAll("tr");
+        console.log("Found diffusion rows:", rows.length);
+        rows.forEach((row, index) => {
+          console.log(`Processing row ${index + 1}:`, row);
+          const emailInput = row.querySelector(
+            'input[name^="diffusion_email_"]'
+          );
+          if (emailInput && emailInput.value.trim()) {
+            console.log(`Row ${index + 1} email:`, emailInput.value);
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailInput.value)) {
+              emailInput.classList.add("is-invalid");
+              const errorSpan = emailInput.parentElement.querySelector(
+                ".validation-message"
+              );
+              if (errorSpan) errorSpan.textContent = "Invalid email address";
+              hasErrors = true;
+            }
+          }
+        });
+
+        console.log("Validation errors found:", hasErrors);
+
+        if (hasErrors) {
+          console.log("Form submission prevented due to validation errors");
+          e.preventDefault();
+          return;
+        }
+
+        // Create hidden inputs for diffusion list data
+        const existingDiffusionInputs = form.querySelectorAll(
+          'input[name="diffusion_list_data"]'
+        );
+        existingDiffusionInputs.forEach((input) => input.remove());
+
+        const diffusionData = [];
+
+        console.log("Number of diffusion rows:", rows.length);
+
+        rows.forEach((row, index) => {
+          const nameInput = row.querySelector('input[name^="diffusion_name_"]');
+          const titleInput = row.querySelector(
+            'input[name^="diffusion_title_"]'
+          );
+          const emailInput = row.querySelector(
+            'input[name^="diffusion_email_"]'
+          );
+
+          console.log(`Row ${index + 1} inputs:`, {
+            name: nameInput ? nameInput.value : "N/A",
+            title: titleInput ? titleInput.value : "N/A",
+            email: emailInput ? emailInput.value : "N/A",
+          });
+
+          if (nameInput && nameInput.value.trim()) {
+            const contactData = {
+              name: nameInput.value.trim(),
+              title: titleInput ? titleInput.value.trim() : "",
+              email: emailInput ? emailInput.value.trim() : "",
+            };
+            diffusionData.push(contactData);
+            console.log("Added contact:", contactData);
+          }
+        });
+
+        console.log("Final diffusion data:", diffusionData);
+
+        // Create hidden input with JSON data
+        if (diffusionData.length > 0) {
+          const hiddenInput = document.createElement("input");
+          hiddenInput.type = "hidden";
+          hiddenInput.name = "diffusion_list_data";
+          hiddenInput.value = JSON.stringify(diffusionData);
+          form.appendChild(hiddenInput);
+
+          console.log("Hidden input created with value:", hiddenInput.value);
+          console.log(
+            "Form now contains hidden input:",
+            form.querySelector('input[name="diffusion_list_data"]')
+          );
+        } else {
+          console.log("No diffusion data to save");
+        }
+
+        // List all form inputs before submission
+        console.log("All form inputs before submission:");
+        const formData = new FormData(form);
+        for (let [key, value] of formData.entries()) {
+          console.log(`${key}: ${value}`);
+        }
+      });
+    } else {
+      console.error('Form with ID "clientAddForm" not found!');
+    }
+  });
+</script>
 {% endblock javascripts %}

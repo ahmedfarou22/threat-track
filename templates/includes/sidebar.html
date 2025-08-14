@@ -1,101 +1,131 @@
 <!-- [ navigation menu ] start -->
 {% load static %}
 <nav class="pcoded-navbar">
-    <div class="navbar-wrapper">
-        <div class="navbar-brand header-logo">
-            <a href="/home/dashboard" class="b-brand">
-                <span class="b-title">Threat Track</span>
-            </a>
-        </div>
-        
-        <div class="navbar-content scroll-div">
-            <ul class="nav pcoded-inner-navbar">
-                {% if 'see_dashboard' in USER_PERMISSIONS %}
-                <li data-username="dashboard Default Ecommerce CRM Analytics Crypto Project" 
-                    class="nav-item {% if app == 'dashboard' or app == '' %} active {% endif %}">
-                    <a href="/home/dashboard" class="nav-link "><span class="pcoded-micon"><i class="feather icon-home"></i></span><span
-                            class="pcoded-mtext">Dashboard</span></a>
-                </li>               
-                {% endif %}
-
-
-                <li data-username="dashboard Default Ecommerce CRM Analytics Crypto Project" 
-                class="nav-item {% if app == 'assessments' %} active {% endif %}">
-                <a href="{% url 'assessments' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-briefcase"></i></span><span
-                        class="pcoded-mtext">Assessments</span></a>
-                </li>
-
-                {% if 'see_calendar' in USER_PERMISSIONS %}
-                <li data-username="dashboard Default Ecommerce CRM Analytics Crypto Project" 
-                class="nav-item {% if app == 'calendar' %} active {% endif %}">
-                <a href="{% url 'calendar' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-calendar"></i></span><span
-                        class="pcoded-mtext">Calendar</span></a>
-                </li>
-                {% endif %}
-
-                {% if 'see_analytics' in USER_PERMISSIONS %}
-                <li data-username="dashboard Default Ecommerce CRM Analytics Crypto Project" 
-                class="nav-item {% if app == 'analytics' %} active {% endif %}">
-                <a href="{% url 'analytics_assessments' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-bar-chart-2"></i></span><span
-                        class="pcoded-mtext">Analytics</span></a>
-                </li>
-                {% endif %}
-
-                {% if 'see_activities' in USER_PERMISSIONS %}
-                <li data-username="dashboard Default Ecommerce CRM Analytics Crypto Project" 
-                class="nav-item {% if app == 'activities' %} active {% endif %}">
-                <a href="{% url 'activities' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-activity"></i></span><span
-                        class="pcoded-mtext">Activities</span></a>
-                </li>
-                {%endif%}
-
-
-                {% if 'r_clients' in USER_PERMISSIONS or 'r_templates' in USER_PERMISSIONS or 'r_vulnerabilities' in USER_PERMISSIONS or 'r_assessment_structure' in USER_PERMISSIONS or  'r_users' in USER_PERMISSIONS%}
-                <li class="nav-item pcoded-menu-caption">
-                    <label>Extra settings</label>
-                </li>
-                {% endif %}
-                {% if 'r_clients' in USER_PERMISSIONS or 'r_templates' in USER_PERMISSIONS or 'r_vulnerabilities' in USER_PERMISSIONS %}
-                <li data-username="basic components Button Alert Badges breadcrumb Paggination progress Tooltip popovers Carousel Cards Collapse Tabs pills Modal Grid System Typography Extra Shadows Embeds"
-                    class="nav-item pcoded-hasmenu {% if app == 'components' %} active {% endif %}">
-                    <a href="javascript:" class="nav-link "><span class="pcoded-micon"><i class="feather icon-box"></i></span><span
-                            class="pcoded-mtext">Components</span></a>
-                    <ul class="pcoded-submenu">
-
-                        {% if 'r_clients' in USER_PERMISSIONS %}
-                        <li class=""><a href="{% url 'clients' %}" class="">Clients</a></li>
-                        {% endif %}
-
-                        {% if 'r_templates' in USER_PERMISSIONS %}
-                        <li class=""><a href="{% url 'templates' %}" class="">Templates</a></li>
-                        {% endif %}
-
-                        {% if 'r_vulnerabilities' in USER_PERMISSIONS %}
-                        <li class=""><a href="{% url 'vulnerabilities' %}" class="">Vulnerabilities</a></li>
-                        {% endif %}
-
-                    </ul>
-                </li>
-                {% endif %}
-                
-                {% if 'r_assessment_structure' in USER_PERMISSIONS %}
-                <li data-username="dashboard Default Ecommerce CRM Analytics Crypto Project" 
-                class="nav-item {% if app == 'assessment_structures' %} active {% endif %}">
-                <a href="{% url 'assessment_structures' %}" class="nav-link "><span class="pcoded-micon"><i class="fas fa-sitemap"></i></span><span
-                        class="pcoded-mtext">Assessment Structures</span></a>
-                </li>
-                {%endif%}
-                
-                {% if 'r_users' in USER_PERMISSIONS %}
-                <li data-username="dashboard Default Ecommerce CRM Analytics Crypto Project" 
-                class="nav-item {% if app == 'users' %} active {% endif %}">
-                <a href="{% url 'users_all' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-users"></i></span><span
-                        class="pcoded-mtext">Users & Teams</span></a>
-                </li>
-                {%endif%}
-
-            </ul>
-        </div>
+  <div class="navbar-wrapper">
+    <div class="navbar-brand header-logo">
+      <a href="/home/dashboard" class="b-brand">
+        <span class="b-title">Threat Track</span>
+      </a>
     </div>
+
+    <div class="navbar-content scroll-div">
+      <ul class="nav pcoded-inner-navbar">
+        {% if 'see_dashboard' in USER_PERMISSIONS %}
+        <li
+          data-username="dashboard Default Ecommerce CRM Analytics Crypto Project"
+          class="nav-item {% if app == 'dashboard' or app == '' %} active {% endif %}"
+        >
+          <a href="/home/dashboard" class="nav-link"
+            ><span class="pcoded-micon"><i class="feather icon-home"></i></span
+            ><span class="pcoded-mtext">Dashboard</span></a
+          >
+        </li>
+        {% endif %}
+
+        <li
+          data-username="dashboard Default Ecommerce CRM Analytics Crypto Project"
+          class="nav-item {% if app == 'assessments' %} active {% endif %}"
+        >
+          <a href="{% url 'assessments' %}" class="nav-link"
+            ><span class="pcoded-micon"
+              ><i class="feather icon-briefcase"></i></span
+            ><span class="pcoded-mtext">Assessments</span></a
+          >
+        </li>
+
+        {% if 'see_calendar' in USER_PERMISSIONS %}
+        <li
+          data-username="dashboard Default Ecommerce CRM Analytics Crypto Project"
+          class="nav-item {% if app == 'calendar' %} active {% endif %}"
+        >
+          <a href="{% url 'calendar' %}" class="nav-link"
+            ><span class="pcoded-micon"
+              ><i class="feather icon-calendar"></i></span
+            ><span class="pcoded-mtext">Calendar</span></a
+          >
+        </li>
+        {% endif %}
+        {% if 'see_analytics' in USER_PERMISSIONS %}
+        <li
+          data-username="dashboard Default Ecommerce CRM Analytics Crypto Project"
+          class="nav-item {% if app == 'analytics' %} active {% endif %}"
+        >
+          <a href="{% url 'analytics_assessments' %}" class="nav-link"
+            ><span class="pcoded-micon"
+              ><i class="feather icon-bar-chart-2"></i></span
+            ><span class="pcoded-mtext">Analytics</span></a
+          >
+        </li>
+        {% endif %}
+        {% if 'see_activities' in USER_PERMISSIONS %}
+        <li
+          data-username="dashboard Default Ecommerce CRM Analytics Crypto Project"
+          class="nav-item {% if app == 'activities' %} active {% endif %}"
+        >
+          <a href="{% url 'activities' %}" class="nav-link"
+            ><span class="pcoded-micon"
+              ><i class="feather icon-activity"></i></span
+            ><span class="pcoded-mtext">Activities</span></a
+          >
+        </li>
+        {% endif %}
+        {% if 'r_clients' in USER_PERMISSIONS or 'r_vulnerabilities' in USER_PERMISSIONS or 'r_assessment_structure' in USER_PERMISSIONS or 'r_users' in USER_PERMISSIONS %}
+        <li class="nav-item pcoded-menu-caption">
+          <label>Extra settings</label>
+        </li>
+        {% endif %}
+        {% if 'r_clients' in USER_PERMISSIONS or 'r_vulnerabilities' in USER_PERMISSIONS %}
+        <li
+          data-username="basic components Button Alert Badges breadcrumb Paggination progress Tooltip popovers Carousel Cards Collapse Tabs pills Modal Grid System Typography Extra Shadows Embeds"
+          class="nav-item pcoded-hasmenu {% if app == 'components' %}active{% endif %}"
+        >
+          <a href="javascript:" class="nav-link"
+            ><span class="pcoded-micon"><i class="feather icon-box"></i></span
+            ><span class="pcoded-mtext">Components</span></a
+          >
+          <ul class="pcoded-submenu">
+            {% if 'r_clients' in USER_PERMISSIONS %}
+            <li class=""><a href="{% url 'clients' %}" class="">Clients</a></li>
+            {% endif %}
+            {% comment %} Templates functionality temporarily disabled
+            {% if 'r_templates' in USER_PERMISSIONS %}
+            <li class="">
+              <a href="{% url 'templates' %}" class="">Templates</a>
+            </li>
+            {% endif %}
+            {% endcomment %}
+            {% if 'r_vulnerabilities' in USER_PERMISSIONS %}
+            <li class="">
+              <a href="{% url 'vulnerabilities' %}" class="">Vulnerabilities</a>
+            </li>
+            {% endif %}
+          </ul>
+        </li>
+        {% endif %}
+        {% if 'r_assessment_structure' in USER_PERMISSIONS %}
+        <li
+          data-username="dashboard Default Ecommerce CRM Analytics Crypto Project"
+          class="nav-item {% if app == 'assessment_structures' %} active {% endif %}"
+        >
+          <a href="{% url 'assessment_structures' %}" class="nav-link"
+            ><span class="pcoded-micon"><i class="fas fa-sitemap"></i></span
+            ><span class="pcoded-mtext">Assessment Structures</span></a
+          >
+        </li>
+        {% endif %}
+        {% if 'r_users' in USER_PERMISSIONS %}
+        <li
+          data-username="dashboard Default Ecommerce CRM Analytics Crypto Project"
+          class="nav-item {% if app == 'users' %} active {% endif %}"
+        >
+          <a href="{% url 'users_all' %}" class="nav-link"
+            ><span class="pcoded-micon"><i class="feather icon-users"></i></span
+            ><span class="pcoded-mtext">Users & Teams</span></a
+          >
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
 </nav>
 <!-- [ navigation menu ] end -->

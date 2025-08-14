@@ -129,6 +129,9 @@
                                         <li class="nav-item">
                                             <a class="nav-link" href="#" id="vulnerabilityLink">Vulnerability</a>
                                         </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#" id="templatesLink">Template</a>
+                                        </li>
                                     </ul>
                                 </div>
 
@@ -213,6 +216,92 @@
                                         </div>
                                     </div>
                                 {% endfor %}
+
+                                <!-- Current Template -->
+                                <div class="card template_section">
+                                    <div class="card-header">
+                                        <h5 class="mb-3">Current Template</h5>
+                                    </div>
+                                    <div class="card-block">
+                                        <div class="row align-items-center">
+                                            <div class="col-sm-8 d-flex align-items-left">
+                                                {% if assessment_structure.template_file %}
+                                                <span class="label bg-c-blue f-12 text-white">Current: {{ assessment_structure.template_file.name|default:"No file" }}</span>
+                                                {% else %}
+                                                <span class="label bg-secondary f-12 text-white">No file uploaded</span>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-sm-4 text-right">
+                                                <a href="{% url 'assessment_structure_template_download' assessment_structure.id %}" class="btn btn-sm btn-outline-primary {% if not assessment_structure.template_file %}disabled{% endif %}">
+                                                    Download
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- new -->
+                                <div class="card template_section" style="display: none;">
+                                    <div class="card-header">
+                                        <h5 class="mb-3">Update Template Settings</h5>
+                                    </div>
+                                    <div class="card-block">
+                                        {% if 'w_assessment_structure' in USER_PERMISSIONS %}
+                                        <form method="post" action="" enctype="multipart/form-data" id="validateForm3">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="template_action" value="1">
+                                            <input class="form-control" type="hidden" name="t_name" value="{{ assessment_structure.name }}">
+                                            
+                                            <div class="row">
+                                                <div class="col-sm-12 mb-4">
+                                                    <div class="form-group">
+                                                        <label>Charts Settings</label>
+                                                        <textarea rows="25" name="t_chart_settings" id="t_chart_settings" class="form-control validate-required validate-json">{{ chart_settings_json }}</textarea>
+                                                        <span class="validation-message" id="t_chart_settings-validation-message"></span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="col-sm-6 mb-4">
+                                                    <div class="form-group">
+                                                        <label>Template File (.docx)</label>
+                                                        <input type="file" name="t_file" class="form-control validate-file-docx" accept=".docx">
+                                                        <span class="validation-message" id="t_file-validation-message"></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-12 mb-2">
+                                                    <div class="form-group">
+                                                        <button type="submit" class="btn btn-primary">Update</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        {% else %}
+                                        <div class="row">
+                                            <div class="col-sm-12 mb-4">
+                                                <div class="form-group">
+                                                    <label>Template Name</label>
+                                                    <input class="form-control" type="text" value="{{ assessment_structure.template_name|default:'Not set' }}" readonly>
+                                                </div>
+                                            </div>
+
+                                            {% if assessment_structure.template_file %}
+                                            <div class="col-sm-6 mb-4">
+                                                <div class="form-group">
+                                                    <label>Template File</label>
+                                                    <div>
+                                                        <span class="badge badge-info">{{ assessment_structure.template_file.name|default:"No file" }}</span>
+                                                        <a href="{% url 'assessment_structure_template_download' assessment_structure.id %}" class="btn btn-sm btn-outline-primary ml-2">
+                                                            <i class="fas fa-download"></i> Download
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -223,44 +312,76 @@
                             const summaryLink = document.getElementById('summaryLink');
                             const assessmentLink = document.getElementById('assessmentLink');
                             const vulnerabilityLink = document.getElementById('vulnerabilityLink');
+                            const templatesLink = document.getElementById('templatesLink');
                             const summaryCards = document.querySelectorAll('.summary_af');
                             const assessmentCards = document.querySelectorAll('.assessment_af');
                             const vulnerabilityCards = document.querySelectorAll('.vulnerability_af');
+                            const templateSection = document.querySelectorAll('.template_section');
                             
-                            // Show summary cards and hide assessment and vulnerability cards by default
+                            // Show summary cards and hide others by default
                             summaryCards.forEach(card => card.style.display = 'block');
                             assessmentCards.forEach(card => card.style.display = 'none');
                             vulnerabilityCards.forEach(card => card.style.display = 'none');
+                            templateSection.forEach(card => card.style.display = 'none');
                             summaryLink.classList.add('active');
+                            
+                            // Format JSON in chart settings
+                            const chartSettingsTextarea = document.getElementById('t_chart_settings');
+                            if (chartSettingsTextarea && chartSettingsTextarea.value) {
+                                try {
+                                    const obj = JSON.parse(chartSettingsTextarea.value);
+                                    chartSettingsTextarea.value = JSON.stringify(obj, undefined, 4);
+                                } catch (e) {
+                                    // Keep original value if JSON is invalid
+                                }
+                            }
                             
                             summaryLink.addEventListener('click', function() {
                                 summaryCards.forEach(card => card.style.display = 'block');
                                 assessmentCards.forEach(card => card.style.display = 'none');
                                 vulnerabilityCards.forEach(card => card.style.display = 'none');
+                                templateSection.forEach(card => card.style.display = 'none');
                                 
                                 summaryLink.classList.add('active');
                                 assessmentLink.classList.remove('active');
                                 vulnerabilityLink.classList.remove('active');
+                                templatesLink.classList.remove('active');
                             });
                             
                             assessmentLink.addEventListener('click', function() {
                                 summaryCards.forEach(card => card.style.display = 'none');
                                 assessmentCards.forEach(card => card.style.display = 'block');
                                 vulnerabilityCards.forEach(card => card.style.display = 'none');
+                                templateSection.forEach(card => card.style.display = 'none');
                                 
                                 summaryLink.classList.remove('active');
                                 assessmentLink.classList.add('active');
                                 vulnerabilityLink.classList.remove('active');
+                                templatesLink.classList.remove('active');
                             });
                             
                             vulnerabilityLink.addEventListener('click', function() {
                                 summaryCards.forEach(card => card.style.display = 'none');
                                 assessmentCards.forEach(card => card.style.display = 'none');
                                 vulnerabilityCards.forEach(card => card.style.display = 'block');
+                                templateSection.forEach(card => card.style.display = 'none');
                                 
                                 summaryLink.classList.remove('active');
                                 assessmentLink.classList.remove('active');
                                 vulnerabilityLink.classList.add('active');
+                                templatesLink.classList.remove('active');
+                            });
+                            
+                            templatesLink.addEventListener('click', function() {
+                                summaryCards.forEach(card => card.style.display = 'none');
+                                assessmentCards.forEach(card => card.style.display = 'none');
+                                vulnerabilityCards.forEach(card => card.style.display = 'none');
+                                templateSection.forEach(card => card.style.display = 'block');
+                                
+                                summaryLink.classList.remove('active');
+                                assessmentLink.classList.remove('active');
+                                vulnerabilityLink.classList.remove('active');
+                                templatesLink.classList.add('active');
                             });
                         });
                         </script>
@@ -280,6 +401,15 @@
     </script>
 {% endif %}
 
+<!-- Initialize the form validators -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form3 = document.getElementById('validateForm3');
+    if (form3) {
+        new FormValidator(form3);
+    }
+});
+</script>
 
 {% comment %} CK editor JS {% endcomment %}
 <script src="{% static 'plugins/ck5/build/ckeditor.js'%}"></script>

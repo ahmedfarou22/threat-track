@@ -18,12 +18,15 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 4. MEDIA_STORAGE_TYPE = one of the following values -> ['LOCAL','S3', 'BLOB'] default is LOCAL
     -> if you choose S3 or BLOB you must set S3_CONFIGURATION or BLOB_CONFIGURATION
-4.1 S3_CONFIGURATION = <AWS_ACCESS_KEY_ID>,<AWS_SECRET_ACCESS_KEY>,<AWS_STORAGE_BUCKET_NAME>,<AWS_S3_ENDPOINT_URL>,<AWS_LOCATION (optional)> 
+4.1 S3_CONFIGURATION = <AWS_ACCESS_KEY_ID>,<AWS_SECRET_ACCESS_KEY>,<AWS_STORAGE_BUCKET_NAME>,<AWS_S3_ENDPOINT_URL>,<AWS_LOCATION (optional)>
 4.2 BLOB_CONFIGURATION = <AZURE_ACCOUNT_NAME>,<AZURE_ACCOUNT_KEY>,<AZURE_CONTAINER>
 
 
-5. DATABASE_TYPE = one of the following values -> ['SQLITE', 'POSTGRES'] default is SQLITE
-    > if you choose POSTGRES you must set DATABASE_CONFIGURATION
+5. DATABASE_TYPE = one of the following values -> ['SQLITE', 'LOCAL', 'AZURE', 'AWS'] default is LOCAL
+    -> SQLITE: Uses local SQLite file (simple, for testing only)
+    -> LOCAL: Uses Docker PostgreSQL container (development and production)
+    -> AZURE: Uses Azure Database for PostgreSQL (managed cloud service)
+    -> AWS: Uses AWS RDS PostgreSQL (managed cloud service)
 5.1 DATABASE_CONFIGURATION = postgresql://<USERNAME>:<PASSWORD>@<HOST>:<PORT>/<DATABASE_NAME>?sslmode=require
 
 """
@@ -31,6 +34,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from django.core.management.utils import get_random_secret_key
 from pathlib import Path
 import os, sys, ast, dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -39,27 +43,35 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', get_random_secret_key())
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 
 # Production Settings
 
 
-DEBUG = ast.literal_eval(os.getenv('DEBUG', 'True'))
-DATABASE_TYPE = os.getenv('DATABASE_TYPE', 'SQLITE')
-MEDIA_STORAGE_TYPE = os.getenv('MEDIA_STORAGE_TYPE', 'LOCAL')
+DEBUG = ast.literal_eval(os.getenv("DEBUG", "True"))
+DATABASE_TYPE = os.getenv(
+    "DATABASE_TYPE", "LOCAL"
+)  # LOCAL, AZURE, AWS, POSTGRES, or SQLITE
+MEDIA_STORAGE_TYPE = os.getenv("MEDIA_STORAGE_TYPE", "LOCAL")
 
-S3_CONFIGURATION = os.getenv('S3_CONFIGURATION').split(',') if os.getenv('S3_CONFIGURATION') else None
-BLOB_CONFIGURATION = os.getenv('BLOB_CONFIGURATION').split(',') if os.getenv('BLOB_CONFIGURATION') else None
+S3_CONFIGURATION = (
+    os.getenv("S3_CONFIGURATION").split(",") if os.getenv("S3_CONFIGURATION") else None
+)
+BLOB_CONFIGURATION = (
+    os.getenv("BLOB_CONFIGURATION").split(",")
+    if os.getenv("BLOB_CONFIGURATION")
+    else None
+)
 
 
 # Production Settings are defined below
 if DEBUG:
-    ALLOWED_HOSTS = ['*']
-    SESSION_COOKIE_AGE = 365 * 24 * 60 * 60 # one year
-    CSRF_TRUSTED_ORIGINS = ['https://' + str(os.getenv("DJANGO_ALLOWED_HOSTS"))]
+    ALLOWED_HOSTS = ["*"]
+    SESSION_COOKIE_AGE = 365 * 24 * 60 * 60  # one year
+    CSRF_TRUSTED_ORIGINS = ["https://" + str(os.getenv("DJANGO_ALLOWED_HOSTS"))]
 else:
     ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
-    CSRF_TRUSTED_ORIGINS = ['https://' + str(os.getenv("DJANGO_ALLOWED_HOSTS"))]
+    CSRF_TRUSTED_ORIGINS = ["https://" + str(os.getenv("DJANGO_ALLOWED_HOSTS"))]
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SESSION_COOKIE_SECURE = True
@@ -69,78 +81,103 @@ else:
 
 # Application definition
 INSTALLED_APPS = [
-    'home',
-    'assessments',
-    'analytics',
-    'activities',
-    'components',
-    'assessment_structures',
-    'users',
-    
-    'axes',
-    'storages',
+    "home",
+    "assessments",
+    "analytics",
+    "activities",
+    "components",
+    "assessment_structures",
+    "users",
+    "axes",
+    "storages",
     "whitenoise.runserver_nostatic",
-
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # for serving static files
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
-    'axes.middleware.AxesMiddleware', # for bruteforce prevention
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # for serving static files
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "axes.middleware.AxesMiddleware",  # for bruteforce prevention
 ]
 
-ROOT_URLCONF = 'Threat_Track.urls'
+ROOT_URLCONF = "Threat_Track.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'Threat_Track.context_processors.active_side_bar',
-                'Threat_Track.context_processors.user_permissions'
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "Threat_Track.context_processors.active_side_bar",
+                "Threat_Track.context_processors.user_permissions",
             ]
         },
     },
 ]
 
-WSGI_APPLICATION = 'Threat_Track.wsgi.application'
+WSGI_APPLICATION = "Threat_Track.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-if DATABASE_TYPE == 'SQLITE':
+if DATABASE_TYPE == "SQLITE":
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
-    
-elif DATABASE_TYPE == 'POSTGRES' and len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
+
+elif DATABASE_TYPE == "LOCAL" and len(sys.argv) > 1 and sys.argv[1] != "collectstatic":
+    # Use Docker PostgreSQL container (development and production)
+    DATABASES = {
+        "default": dj_database_url.parse(
+            os.getenv(
+                "DATABASE_CONFIGURATION",
+                f"postgresql://postgres:{os.getenv('DB_PASSWORD', 'postgres')}@database:5432/threat_track",
+            )
+        ),
+    }
+
+elif (
+    DATABASE_TYPE in ["AZURE", "AWS"]
+    and len(sys.argv) > 1
+    and sys.argv[1] != "collectstatic"
+):
     if os.getenv("DATABASE_CONFIGURATION", None) is None:
-        raise Exception("DATABASE_CONFIGURATION environment variable not defined")
+        raise Exception(
+            f"DATABASE_CONFIGURATION environment variable not defined for {DATABASE_TYPE} database type"
+        )
     DATABASES = {
         "default": dj_database_url.parse(os.environ.get("DATABASE_CONFIGURATION")),
+    }
+
+else:
+    # Default fallback for LOCAL database or during collectstatic
+    DATABASES = {
+        "default": dj_database_url.parse(
+            os.getenv(
+                "DATABASE_CONFIGURATION",
+                f"postgresql://postgres:{os.getenv('DB_PASSWORD', 'postgres')}@database:5432/threat_track",
+            )
+        ),
     }
 
 
@@ -149,16 +186,16 @@ elif DATABASE_TYPE == 'POSTGRES' and len(sys.argv) > 0 and sys.argv[1] != 'colle
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -166,63 +203,110 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'Africa/Cairo'
+TIME_ZONE = "Africa/Cairo"
 
 USE_I18N = True
 
 USE_TZ = True
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-LOGIN_URL = '/users/login'
-
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+LOGIN_URL = "/users/login"
 
 
 # Static files
 STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-STATICFILES_STORAGE = ('whitenoise.storage.CompressedManifestStaticFilesStorage')
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Media files
 MEDIA_URL = "media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
 # --- Axes Settings --- (8 failed logins -> block ip/user 3h )
 AUTHENTICATION_BACKENDS = [
-    'axes.backends.AxesStandaloneBackend',
-    'django.contrib.auth.backends.ModelBackend'
-    ]
-AXES_FAILURE_LIMIT = 8 
+    "axes.backends.AxesStandaloneBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+AXES_FAILURE_LIMIT = 8
 AXES_COOLOFF_TIME = 3
 AXES_LOCKOUT_CALLABLE = "users.views.lockout"
 
 
 # --- Serve Media files via S3 or BLOB storage ---
-''' 
+""" 
 The varibale S3_CONFIGURATION/BLOB_CONFIGURATION is retrived from the enviroment variable 
 it is orignaly a string and converted into a list using the split(',') 
 then passed into the connfiuration below.
-'''
-if MEDIA_STORAGE_TYPE == 'S3':
+"""
+if MEDIA_STORAGE_TYPE == "S3":
     AWS_ACCESS_KEY_ID = S3_CONFIGURATION[0]
     AWS_SECRET_ACCESS_KEY = S3_CONFIGURATION[1]
     AWS_STORAGE_BUCKET_NAME = S3_CONFIGURATION[2]
     AWS_S3_ENDPOINT_URL = S3_CONFIGURATION[3]
-        
-    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
-    AWS_S3_FILE_OVERWRITE = False
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    MEDIA_URL = AWS_S3_ENDPOINT_URL + '/'
+    AWS_S3_REGION_NAME = (
+        S3_CONFIGURATION[4] if len(S3_CONFIGURATION) > 4 else "us-east-1"
+    )
 
-elif MEDIA_STORAGE_TYPE == 'BLOB':
+    # Optional 6th parameter: CDN URL
+    CDN_URL = S3_CONFIGURATION[5] if len(S3_CONFIGURATION) > 5 else None
+
+    AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_DEFAULT_ACL = "public-read"
+    AWS_QUERYSTRING_AUTH = False
+    AWS_S3_URL_PROTOCOL = "https:"
+    AWS_S3_ADDRESSING_STYLE = "virtual"
+    AWS_S3_SIGNATURE_VERSION = "s3v4"
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+
+    if CDN_URL:
+        clean_cdn_url = CDN_URL.replace("https://", "").replace("http://", "")
+        MEDIA_URL = f"https://{clean_cdn_url}/{AWS_STORAGE_BUCKET_NAME}/"
+    else:
+        MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_REGION_NAME}.digitaloceanspaces.com/"
+
+elif MEDIA_STORAGE_TYPE == "BLOB":
     AZURE_ACCOUNT_NAME = BLOB_CONFIGURATION[0]
     AZURE_ACCOUNT_KEY = BLOB_CONFIGURATION[1]
     AZURE_CONTAINER = BLOB_CONFIGURATION[2]
-    
-    AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
+
+    AZURE_CUSTOM_DOMAIN = f"{AZURE_ACCOUNT_NAME}.blob.core.windows.net"
     AZURE_URL_EXPIRATION_SECS = 28800
-    DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
-    MEDIA_URL = 'https://' + AZURE_CUSTOM_DOMAIN + '/' + AZURE_CONTAINER + '/'
- 
+    DEFAULT_FILE_STORAGE = "storages.backends.azure_storage.AzureStorage"
+    MEDIA_URL = "https://" + AZURE_CUSTOM_DOMAIN + "/" + AZURE_CONTAINER + "/"
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.azure_storage.AzureStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+
+elif MEDIA_STORAGE_TYPE == "LOCAL":
+    # Get the host/IP and port from environment variables
+    MEDIA_HOST = os.getenv("MEDIA_HOST", "localhost")
+    MEDIA_PORT = os.getenv("MEDIA_PORT", "8080")
+    MEDIA_URL = f"http://{MEDIA_HOST}:{MEDIA_PORT}/media/"

@@ -77,6 +77,56 @@
                                                     </div>
                                                 </div>
 
+                                                <div class="col-sm-12 mb-4">
+                                                    <div class="form-group">
+                                                        <label>Contact Information</label>
+                                                        <!-- Hidden script to store diffusion data as proper JSON -->
+                                                        {{ client.diffusion_list|json_script:"diffusion-data" }}
+                                                        <div class="card">
+                                                        <div
+                                                            class="card-header d-flex justify-content-between align-items-center"
+                                                        >
+                                                            <button
+                                                            type="button"
+                                                            class="btn btn-info"
+                                                            id="addDiffusionRow"
+                                                            >
+                                                            Add Contact
+                                                            </button>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="table-responsive">
+                                                            <table
+                                                                class="table table-hover"
+                                                                id="diffusionTable"
+                                                            >
+                                                                <thead>
+                                                                <tr>
+                                                                    <th>Contact Name</th>
+                                                                    <th>Contact Title</th>
+                                                                    <th>Contact Email</th>
+                                                                    <th>Actions</th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody id="diffusionTableBody">
+                                                                <!-- Dynamic rows will be added here -->
+                                                                </tbody>
+                                                            </table>
+                                                            </div>
+                                                            <div
+                                                            id="noDiffusionItems"
+                                                            class="text-center text-muted py-3"
+                                                            >
+                                                            <p class="mb-0">
+                                                                No contacts added yet. Click "Add Contact" to
+                                                                get started.
+                                                            </p>
+                                                            </div>
+                                                        </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
                                                 <div class="col-sm-12 mb-2">
                                                     <div class="form-group">
                                                         <a href="{% url 'clients' %}" class="btn btn-secondary">Back</a>
@@ -152,4 +202,152 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+<!-- Dynamic Diffusion List Table Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let diffusionRowCounter = 0;
+    const tableBody = document.getElementById('diffusionTableBody');
+    const noItemsDiv = document.getElementById('noDiffusionItems');
+    const addButton = document.getElementById('addDiffusionRow');
+
+    // Function to show/hide the "no items" message
+    function toggleNoItemsMessage() {
+        const rowCount = tableBody.children.length;
+        if (rowCount === 0) {
+            noItemsDiv.style.display = 'block';
+            document.getElementById('diffusionTable').style.display = 'none';
+        } else {
+            noItemsDiv.style.display = 'none';
+            document.getElementById('diffusionTable').style.display = 'table';
+        }
+    }
+
+    // Function to add a new row
+    function addDiffusionRow(name = '', title = '', email = '') {
+        diffusionRowCounter++;
+        const newRow = document.createElement('tr');
+        newRow.setAttribute('data-row-id', diffusionRowCounter);
+        
+        newRow.innerHTML = `
+            <td>
+                <input type="text" 
+                       name="diffusion_name_${diffusionRowCounter}" 
+                       value="${name}" 
+                       class="form-control validate-required validate-first-last-name">
+                <span class="validation-message text-danger small" id="diffusion_name_${diffusionRowCounter}-validation-message"></span>
+            </td>
+            <td>
+                <input type="text" 
+                       name="diffusion_title_${diffusionRowCounter}" 
+                       value="${title}" 
+                       class="form-control form-control-sm">
+                <span class="validation-message text-danger small" id="diffusion_title_${diffusionRowCounter}-validation-message"></span>
+            </td>
+            <td>
+                <input type="text" 
+                       name="diffusion_email_${diffusionRowCounter}" 
+                       value="${email}" 
+                       class="form-control validate-email">
+                <span class="validation-message text-danger small" id="diffusion_email_${diffusionRowCounter}-validation-message"></span>
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger remove-diffusion-row" title="Remove this item">
+                    Delete
+                </button>
+            </td>
+        `;
+        
+        tableBody.appendChild(newRow);
+        toggleNoItemsMessage();
+        
+        // Add event listener for the remove button
+        const removeButton = newRow.querySelector('.remove-diffusion-row');
+        removeButton.addEventListener('click', function() {
+            newRow.remove();
+            toggleNoItemsMessage();
+        });
+    }
+
+    // Add button event listener
+    addButton.addEventListener('click', function() {
+        addDiffusionRow();
+    });
+
+    // Initialize with no items message
+    toggleNoItemsMessage();
+
+    // Load existing diffusion list data
+    try {
+        // Get data from JSON script element
+        const diffusionDataScript = document.getElementById('diffusion-data');
+        let diffusionData = [];
+        
+        if (diffusionDataScript) {
+            const diffusionDataString = diffusionDataScript.textContent.trim();
+            if (diffusionDataString && diffusionDataString !== '' && diffusionDataString !== 'null' && diffusionDataString !== 'None' && diffusionDataString !== '[]') {
+                diffusionData = JSON.parse(diffusionDataString);
+            }
+        } else {
+            // Fallback to template variable (old method)
+            const diffusionDataString = '{{ client.diffusion_list|escapejs }}';
+            if (diffusionDataString && diffusionDataString !== '' && diffusionDataString !== 'null' && diffusionDataString !== 'None' && diffusionDataString !== '[]') {
+                diffusionData = JSON.parse(diffusionDataString);
+            }
+        }
+        
+        if (Array.isArray(diffusionData) && diffusionData.length > 0) {
+            diffusionData.forEach((item) => {
+                addDiffusionRow(item.name || '', item.title || '', item.email || '');
+            });
+        }
+        
+    } catch (e) {
+        console.error('Error loading existing diffusion list data:', e);
+    }
+
+    // Form submission handler to collect diffusion list data
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            console.log('Form submission started');
+            
+            // Create hidden inputs for diffusion list data
+            const existingDiffusionInputs = form.querySelectorAll('input[name="diffusion_list_data"]');
+            existingDiffusionInputs.forEach(input => input.remove());
+
+            const diffusionData = [];
+            const rows = tableBody.querySelectorAll('tr');
+            
+            console.log('Number of diffusion rows:', rows.length);
+            
+            rows.forEach(row => {
+                const nameInput = row.querySelector('input[name^="diffusion_name_"]');
+                const titleInput = row.querySelector('input[name^="diffusion_title_"]');
+                const emailInput = row.querySelector('input[name^="diffusion_email_"]');
+                
+                if (nameInput && nameInput.value.trim()) {
+                    const contactData = {
+                        name: nameInput.value.trim(),
+                        title: titleInput.value.trim(),
+                        email: emailInput.value.trim()
+                    };
+                    diffusionData.push(contactData);
+                    console.log('Added contact:', contactData);
+                }
+            });
+
+            console.log('Final diffusion data:', diffusionData);
+
+            // Create hidden input with JSON data
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'diffusion_list_data';
+            hiddenInput.value = JSON.stringify(diffusionData);
+            form.appendChild(hiddenInput);
+            
+            console.log('Hidden input created with value:', hiddenInput.value);
+        });
+    }
+});
+</script>
 {% endblock javascripts %}

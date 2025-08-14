@@ -48,3 +48,56 @@ Thumbs.db
 *.mov
 *.wmv
 
+# Virtual Environments
+vdjango/
+
+# Django specific files
+*.sqlite3
+db.sqlite3
+/static/
+/staticfiles/
+/media/
+local_settings.py
+.env.local
+.env.production
+
+# Docker files
+docker-compose.override.yml
+.dockerignore
+*.container.log
+
+# Environment and secrets
+.env
+.env.production
+.env.staging
+secrets/
+*.pem
+*.key
+*.crt
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Additional virtual environments
+venv/
+env/
+ENV/
+
+# IDE files
+.vscode/
+*.swp
+*.swo
+*~
+
+# Application logs
+logs/
+server_debug.log
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
