@@ -28,8 +28,11 @@ COPY . .
 # Make transfer_db script executable
 RUN chmod +x /app/transfer_db/transfer_db.sh
 
-# Create necessary directories
-RUN mkdir -p /app/media /app/staticfiles
+# Create necessary directories and copy seed media files
+RUN mkdir -p /app/media /app/staticfiles /app/media/templates
+
+# Copy seed media files (including default template)
+COPY seed_media/ /app/media/
 
 # Create a non-root user for security with specific UID to match nginx
 RUN groupadd -r appuser -g 101 && useradd -r -g appuser -u 101 appuser

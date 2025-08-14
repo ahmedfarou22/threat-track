@@ -66,6 +66,9 @@ run_command() {
     run_command "Making migrations" "python manage.py makemigrations"
     run_command "Running migrations" "python manage.py migrate"
 
+    # Copy seed media files to media directory
+    run_command "Setting up media files" "cp -r seed_media/* media/ 2>/dev/null || echo 'No seed media files to copy'"
+
     run_command "Loading user permissions" "python manage.py loaddata '$script_dir/users_permission.json'"
     run_command "Loading user roles" "python manage.py loaddata '$script_dir/users_role.json'"
     run_command "Loading default users" "python manage.py loaddata '$script_dir/users.json'"
@@ -87,6 +90,7 @@ run_command() {
     print_status "Default admin user created"
     print_status "All permissions and roles loaded"
     print_status "Components and templates loaded"
+    print_status "Default Word template installed"
     print_status "Static files collected"
     echo ""
     print_status "Default Login Credentials:"

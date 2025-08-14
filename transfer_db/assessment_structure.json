@@ -6,12 +6,16 @@
     "name": "Threat Track Default Structure",
     "description": "",
     "s_fields": {
-      "Summary": "",
+      "Notes": "",
       "Scope": "",
-      "Notes": ""
+      "Summary": ""
     },
     "a_fields": null,
-    "v_fields": null
+    "v_fields": null,
+    "template_name": "Threat Track Default Template",
+    "template_about": "Default Word template for Threat Track assessments",
+    "template_file": "templates/Threat_Track_Default_Template.docx",
+    "chart_settings": null
   }
 }
 ]
