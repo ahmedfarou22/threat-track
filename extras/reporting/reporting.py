@@ -136,6 +136,28 @@ def genrate_report(template_obj, context):
         template_path = template_obj.file
         chart_settings = template_obj.chart_settings
 
+        # Check if chart_settings is None or doesn't have 'charts' key
+        if chart_settings is None:
+            chart_settings = {"charts": []}
+        elif not isinstance(chart_settings, dict):
+            chart_settings = {"charts": []}
+        elif "charts" not in chart_settings:
+            chart_settings["charts"] = []
+        elif chart_settings["charts"] is None:
+            chart_settings["charts"] = []
+
+        # Set defaults for potentially missing context fields BEFORE any access
+        if context.get("a_fields") is None:
+            context["a_fields"] = {}
+        if context.get("s_fields") is None:
+            context["s_fields"] = {}
+        if context.get("vulnerabilities") is None:
+            context["vulnerabilities"] = []
+        if context.get("files") is None:
+            context["files"] = []
+        if context.get("assigned_users") is None:
+            context["assigned_users"] = []
+
         # Prevent Template Injection. (Works by getting all the strings inside the word document. runs secure django jinja rendering if it passes it is secure)
         if True:
             strings_all = ""
@@ -216,17 +238,16 @@ def genrate_report(template_obj, context):
                 fig.savefig(buffer, format="png")
                 plt.close(fig)
                 image_bytes = buffer.getvalue()
-                context[str(chart_type) + "_chart"] = InlineImage(
-                    doc,
-                    io.BytesIO(image_bytes),
-                    width=Mm(chart_setting.get("size", 120)),
+
+                context[str(chart_type) + "_chart_bytes"] = image_bytes
+                context[str(chart_type) + "_chart_size"] = chart_setting.get(
+                    "size", 120
                 )
             except Exception as e:
                 plt.close(fig)  # Ensure figure is closed even on error
-                print(f"Error generating chart {chart_type}: {str(e)}")
                 context[str(chart_type) + "_chart"] = None
 
-        # Rendering Addtional Fields
+        # Rendering Additional Fields
         if context["s_fields"]:
             for filed in context["s_fields"]:
                 try:
@@ -321,17 +342,76 @@ def genrate_report(template_obj, context):
 
         # Rendering client logo
         try:
-            if context["client"]["logo"]:
-                context["client"]["logo"] = InlineImage(
-                    doc, context["client"]["logo"], width=Mm(20)
-                )
+            # Check if client exists and has a valid logo file
+            if (
+                context.get("client") is not None
+                and isinstance(context["client"], dict)
+                and context["client"].get("logo") is not None
+            ):
+                logo_field = context["client"]["logo"]
+
+                # Check if ImageFieldFile has an actual file
+                if (
+                    hasattr(logo_field, "name")
+                    and logo_field.name
+                    and str(logo_field.name).strip()
+                ):
+                    context["client"]["logo"] = InlineImage(
+                        doc, context["client"]["logo"], width=Mm(20)
+                    )
+                else:
+                    context["client"]["logo"] = None
             else:
+                # Ensure client dict exists before setting logo to None
+                if context.get("client") is None:
+                    context["client"] = {}
                 context["client"]["logo"] = None
         except Exception as e:
-            print(f"Error loading client logo: {str(e)}")
+            # Ensure client dict exists before setting logo to None
+            if context.get("client") is None:
+                context["client"] = {}
             context["client"]["logo"] = None
 
+        # Fix client diffusion_list if it's None
+        if (
+            context["client"].get("diffusion_list") is None
+            or context["client"]["diffusion_list"] == ""
+        ):
+            context["client"]["diffusion_list"] = []
+
+        # Additional safety checks for nested objects
+        if context.get("assessment_structure"):
+            if isinstance(context["assessment_structure"], dict):
+                if context["assessment_structure"].get("s_fields") is None:
+                    context["assessment_structure"]["s_fields"] = {}
+                if context["assessment_structure"].get("a_fields") is None:
+                    context["assessment_structure"]["a_fields"] = {}
+
+        # Safety check for vulnerability fields
+        for vuln in context.get("vulnerabilities", []):
+            if isinstance(vuln, dict):
+                if vuln.get("fields") is None:
+                    vuln["fields"] = {}
+
         try:
+
+            # Create InlineImage objects just before rendering to avoid doc corruption
+            for chart_type in ["pie", "bar"]:
+                chart_bytes_key = f"{chart_type}_chart_bytes"
+                chart_size_key = f"{chart_type}_chart_size"
+                if chart_bytes_key in context:
+                    try:
+                        context[f"{chart_type}_chart"] = InlineImage(
+                            doc,
+                            io.BytesIO(context[chart_bytes_key]),
+                            width=Mm(context[chart_size_key]),
+                        )
+                        # Clean up the temporary bytes
+                        del context[chart_bytes_key]
+                        del context[chart_size_key]
+                    except Exception as img_error:
+                        context[f"{chart_type}_chart"] = None
+
             doc.render(context, jinja_env)
 
             # Add Internal Linking workaround
