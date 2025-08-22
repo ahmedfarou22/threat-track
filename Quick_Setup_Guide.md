@@ -2,15 +2,6 @@
 
 This guide will walk you through setting up Threat Track using Docker.
 
-## Clone the Repository
-
-Before you begin, clone the repository to your local machine:
-
-```bash
-git clone https://github.com/ahmedfarou22/threat-track.git
-cd threat-track
-```
-
 ## Prerequisites
 
 ### Install Docker
@@ -21,7 +12,7 @@ Before you begin, you need to have Docker installed on your system.
 
 **Reference System (for installation):**
 
-- OS: Ubuntu 24.10 (x86_64)
+- OS: Ubuntu 24.04 (x86_64)
 - Kernel: Linux 6.11.0-29-generic
 - CPU: 1 vCPU (KVM/QEMU)
 - RAM: 1GB
@@ -32,7 +23,7 @@ Before you begin, you need to have Docker installed on your system.
 sudo apt update
 
 # Install Docker
-sudo apt install docker.io docker-compose
+sudo apt install docker.io docker-compose-v2 -y
 
 # Start Docker service
 sudo systemctl start docker
@@ -40,6 +31,15 @@ sudo systemctl enable docker
 
 # Add your user to docker group (optional, to run without sudo)
 sudo usermod -aG docker $USER
+```
+
+## Clone the Repository
+
+Before you begin, clone the repository to your local machine:
+
+```bash
+git clone https://github.com/ahmedfarou22/threat-track.git
+cd threat-track
 ```
 
 ## Setup Instructions
@@ -60,9 +60,9 @@ Edit the `.env` file to configure your deployment. Here are the key variables yo
 #### Media Storage Configuration
 
 - **MEDIA_HOST**: Custom host for media files (optional)
-- **MEDIA_PORT**: Custom port for media files (optional)
+- **MEDIA_PORT**: Custom port for media files (optional, default: 8080)
 
-For a basic local setup, the default values in `.env.example` work fine. Just make sure to:
+For a basic local setup, the default values in `.env.example` work fine. The application runs on port 8080 by default, but you can change this in the `.env` file if needed.
 
 ### Start the Application
 

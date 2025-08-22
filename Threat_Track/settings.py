@@ -68,14 +68,29 @@ BLOB_CONFIGURATION = (
 if DEBUG:
     ALLOWED_HOSTS = ["*"]
     SESSION_COOKIE_AGE = 365 * 24 * 60 * 60  # one year
-    CSRF_TRUSTED_ORIGINS = ["https://" + str(os.getenv("DJANGO_ALLOWED_HOSTS"))]
+    CSRF_TRUSTED_ORIGINS = [
+        f"https://{host.strip()}"
+        for host in os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+    ] + [
+        f"http://{host.strip()}"
+        for host in os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+    ]
 else:
     ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
-    CSRF_TRUSTED_ORIGINS = ["https://" + str(os.getenv("DJANGO_ALLOWED_HOSTS"))]
+    CSRF_TRUSTED_ORIGINS = [
+        f"https://{host.strip()}"
+        for host in os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+    ] + [
+        f"http://{host.strip()}"
+        for host in os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+    ]
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
+    # SSL/HTTPS Settings - Only enable if you have a valid SSL certificate
+    SESSION_COOKIE_SECURE = ast.literal_eval(
+        os.getenv("SESSION_COOKIE_SECURE", "False")
+    )
+    CSRF_COOKIE_SECURE = ast.literal_eval(os.getenv("CSRF_COOKIE_SECURE", "False"))
     SESSION_COOKIE_AGE = 8 * 60 * 60  # The session will expire after 8 hours
 
 

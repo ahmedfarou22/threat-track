@@ -70,22 +70,25 @@ Avoid XML crashes by escaping `<`, `>`, and `&`:
 
 To apply conditional background colors to table cells, use the `{% cellbg %}` tag at the **very beginning of the cell**.
 
+### 🎨 Color Syntax
+
+The `{% cellbg %}` tag accepts hex color codes and supports conditional logic:
+
+```text
+{% cellbg '93c47d' if vuln.risk_rating == 'Low' else
+'cc0000' if vuln.risk_rating == 'Critical' else
+'ffffff' %}{{vuln.cvss}}
+```
+
+This example:
+
+- Sets **green** (`93c47d`) for Low risk
+- Sets **dark red** (`cc0000`) for Critical risk
+- Defaults to **white** (`ffffff`) for any other value
+
 ### 📋 Example Table Template
 
-|                                    **Number**                                     |   **Finding**   |         **Risk Score**          |                **Risk**                |
-| :-------------------------------------------------------------------------------: | :-------------: | :-----------------------------: | :------------------------------------: |
-| **Merged across all 4 columns:** `{%tr for vuln in vulnerabilitiessort_cvss() %}` |                 |                                 |                                        |
-|                                 {{ vuln.number }}                                 | {{ vuln.name }} | {% cellbg ... %}{{ vuln.cvss }} | {% cellbg ... %}{{ vuln.risk_rating }} |
-|                 **Merged across all 4 columns:** `{%tr endfor %}`                 |                 |                                 |                                        |
-
-### 🎯 Color Codes Used
-
-| Risk Level | Hex Code | Color           |
-| ---------- | -------- | --------------- |
-| Low        | `93c47d` | Green           |
-| Medium     | `ffd966` | Yellow          |
-| High       | `e06666` | Red             |
-| Unknown    | `ffffff` | White (default) |
+![Example Table Template that uses the sort_cvss() function](image.png)
 
 ---
 
@@ -143,17 +146,72 @@ When adding custom fields that include tables (for example, a **Risk Matrix** or
 
 ---
 
-## 🧠 Advanced Template Usage
+## 🔧 Custom Jinja2 Functions
 
-### 🔍 Custom Filters
+### 📊 sort_cvss()
 
-Your template uses filters like:
+The `sort_cvss()` function sorts vulnerabilities by their CVSS scores with flexible ordering options.
+
+**Parameters:**
+
+- `"high"` - Sorts in descending order (highest CVSS scores first)
+- `"low"` - Sorts in ascending order (lowest CVSS scores first)
+- `"keeps"` - Maintains the original order (no sorting)
+
+**Usage Examples:**
 
 ```text
-{{ vulnerabilities|count_risk_rating('Critical') }}
+{% for vuln in vulnerabilities|sort_cvss("high") %}
+{{ vuln.name }} - CVSS: {{ vuln.cvss_score }}
+{% endfor %}
 ```
 
-This requires defining a custom Jinja2 filter in your Python code.
+```text
+{% for vuln in vulnerabilities|sort_cvss("low") %}
+{{ vuln.name }} - CVSS: {{ vuln.cvss_score }}
+{% endfor %}
+```
+
+### 🔢 count_risk_rating()
+
+The `count_risk_rating()` function counts the number of vulnerabilities that match a specific risk rating level.
+
+**Parameters:**
+
+- `what` - The risk rating to count (e.g., "Critical", "High", "Medium", "Low")
+
+**Usage Examples:**
+
+```text
+Critical vulnerabilities found: {{ vulnerabilities|count_risk_rating('Critical') }}
+```
+
+```text
+Medium risk issues: {{ vulnerabilities|count_risk_rating('Medium') }}
+```
+
+**Example Output:**
+
+- If you have 5 Critical vulnerabilities → returns `5`
+- If you have 12 High vulnerabilities → returns `12`
+
+### 📈 count_all()
+
+The `count_all()` function returns the total count of vulnerabilities.
+
+**Usage Examples:**
+
+```text
+Total vulnerabilities found: {{ vulnerabilities|count_all() }}
+```
+
+```text
+Assessment covered {{ vulnerabilities|count_all() }} security findings.
+```
+
+---
+
+## 🧠 Advanced Template Usage
 
 ### 📄 Page Breaks
 
